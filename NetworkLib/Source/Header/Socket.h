@@ -60,7 +60,7 @@ protected:
 
 	const uint8 *InPeak() const { return &m_inBuffer->m_buffer[m_inBuffer->m_readPosition]; }
 
-	int ReadLengthRemaining() const { return m_inBuffer->ReadLengthRemaining(); }
+	size_t ReadLengthRemaining() const { return m_inBuffer->ReadLengthRemaining(); }
 
 	void ForceFlushOut();
 

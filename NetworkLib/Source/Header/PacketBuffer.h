@@ -23,7 +23,7 @@ public:
 	uint8 Peak() const { return m_buffer[m_readPosition]; }
 
 	void Read(char *buffer, int length);
-	int ReadLengthRemaining() const { return m_writePosition - m_readPosition; }
+	size_t ReadLengthRemaining() const { return m_writePosition - m_readPosition; }
 
 	void Write(const char *buffer, int length);
 };

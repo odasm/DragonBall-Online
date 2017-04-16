@@ -14,14 +14,15 @@ Log::Log()
 void Log::outTime()
 {
 	time_t rawtime;
-	struct tm * timeinfo;
+	struct tm * timeinfo = new struct tm;
 	char buffer[80];
 
 	time(&rawtime);
-	timeinfo = localtime(&rawtime);
+	localtime_s(timeinfo, &rawtime);
 	strftime(buffer, sizeof(buffer), "%I:%M:%S", timeinfo);
 	std::string str(buffer);
 	std::cout << white << "[" << str.c_str() << "] " << white;
+	delete timeinfo;
 }
 void Log::outString()
 {

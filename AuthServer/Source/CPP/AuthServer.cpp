@@ -10,8 +10,8 @@ AuthServer::~AuthServer()
 }
 void AuthServer::Start()
 {
-	sLog->outDebug("AuthServer: should load table and data here.");
-	sLog->outDebug("AuthServer: should load database here.");
+	sLog->outDetail("Connecting to database...");
+
 	network = new Listener<AuthSocket>(port, worker);
 	sLog->outString("AuthServer: Listener started, awaiting for connection...");
 }

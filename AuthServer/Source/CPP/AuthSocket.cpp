@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <cstdio>
 #include <Opcodes.h>
-#include <Packet.h>
 #include <Encryptation.h>
 
 enum eStatus
@@ -38,30 +37,32 @@ void AuthSocket::OnConnectionDone()
 
 	/// the connection is now accepted, WTF
 }
-bool AuthSocket::_HandleOnLogin()
+bool AuthSocket::_HandleOnLogin(Packet& packet)
 {
+	UA_LOGIN_REQ req = (UA_LOGIN_REQ&)*packet.GetPacketData();
+	size_t converted;
+	char userName[16 + 1];
+	wcstombs_s(&converted, userName, req.awchUserId, 16);
+	sLog->outDetail("Login request by: %s using client version: %d.%d", userName, req.wLVersion, req.wRVersion);
 	return true;
 }
 bool AuthSocket::ProcessIncomingData()
 {
 	while (ReadLengthRemaining() > 0)
 	{
-		WORD sizeInc = ReadLengthRemaining();
+		size_t sizeInc = ReadLengthRemaining();
 		BYTE *data = (BYTE*)InPeak();
-		Packet packet(data, sizeInc);
+		Packet packet(data, static_cast<WORD>(sizeInc));
 		/*
 			///		 DECRYPT PACKET HERE ????		\\\
 		*/
 		sLog->outPacketDebugger(&packet);
 		if ((int)packet.GetPacketHeader()->bySequence == 103) // Get the login request data
 		{
-			UA_LOGIN_REQ req = (UA_LOGIN_REQ&)*packet.GetPacketData();
-			char userName[16+1];
-			wcstombs(userName, req.awchUserId, 16);
-			sLog->outDetail("Login request by: %s using client version: %d.%d", userName, req.wLVersion, req.wRVersion);
+			_HandleOnLogin(packet);
 		}
 		/// if we reach here, it means that a valid opcode was found and the handler completed successfully
-		ReadSkip(sizeInc);
+		ReadSkip(static_cast<int>(sizeInc));
 		packet.Destroy();
 		return true;
 	}
