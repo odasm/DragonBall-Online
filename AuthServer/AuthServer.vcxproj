@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Build\</OutDir>
-    <IncludePath>$(SolutionDir)NetworkLib\Source\Header;$(SolutionDir)AuthServer\Source\Header;$(SolutionDir)Shared\Source\Header;$(SolutionDir)packages\boost.1.63.0.0\lib\native\include\boost;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)NetworkLib\Source\Header\;$(SolutionDir)AuthServer\Source\Header\;$(SolutionDir)Shared\Source\Header\;$(SolutionDir)packages\boost.1.63.0.0\lib\native\include\boost\;$(SolutionDir)Shared\Source\SQLLibrary\;$(SolutionDir)Shared\Source\SQLLibrary\mysql\;$(SolutionDir)Shared\Source\SQLLibrary\mysql\cppconn;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -146,8 +146,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)packages\boost.1.63.0.0\compiled;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)packages\boost.1.63.0.0\compiled;$(SolutionDir)Shared\Source\SQLLibrary\mysql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mysqlcppconn.lib;libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

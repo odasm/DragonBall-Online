@@ -30,6 +30,9 @@
     <ClInclude Include="Source\Header\ConsoleColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\SQLLibrary\mysqlconn_wrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CPP\Logger.cpp">
@@ -38,5 +41,11 @@
     <ClCompile Include="Source\CPP\Encryptation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\SQLLibrary\mysqlconn_wrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@ public:
 	AuthServer(int _port = 12345, int _workerThread = 1);
 	~AuthServer();
 
-	void Start();
+	bool Start();
 private:
 	Listener<AuthSocket>	*network;
 	int port;

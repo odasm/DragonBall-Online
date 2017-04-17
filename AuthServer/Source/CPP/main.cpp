@@ -14,18 +14,22 @@ int main()
 	signal(SIGTERM, signalHandler);
 	signal(SIGBREAK, signalHandler);
 
-	std::cout << "\n\n" << std::endl;
-	std::cout << "\t  ____                              ____        _ _ " << std::endl;
-	std::cout << "\t |  _ \\ _ __ __ _  __ _  ___  _ __ | __ )  __ _| | |" << std::endl;
-	std::cout << "\t | | | | '__/ _` |/ _` |/ _ \\| '_ \\|  _ \\ / _` | | |" << std::endl;
-	std::cout << "\t | |_| | | | (_| | (_| | (_) | | | | |_) | (_| | | |" << std::endl;
-	std::cout << "\t |____/|_|  \\__,_|\\__, |\\___/|_| |_|____/ \\__,_|_|_|" << std::endl;
-	std::cout << "\t                  |___/                             " << std::endl;
-	std::cout << "\t______           AKCore :O 2017					______\n\n" << std::endl;
+	std::cout << blue << "\n\n" << std::endl;
+	std::cout << "\t     ____                              ____        _ _ " << std::endl;
+	std::cout << "\t    |  _ \\ _ __ __ _  __ _  ___  _ __ | __ )  __ _| | |" << std::endl;
+	std::cout << "\t    | | | | '__/ _` |/ _` |/ _ \\| '_ \\|  _ \\ / _` | | |" << std::endl;
+	std::cout << "\t    | |_| | | | (_| | (_| | (_) | | | | |_) | (_| | | |" << std::endl;
+	std::cout << "\t    |____/|_|  \\__,_|\\__, |\\___/|_| |_|____/ \\__,_|_|_|" << std::endl;
+	std::cout << "\t                     |___/                             " << std::endl;
+	std::cout << yellow << "\t   	           AKCore 2017					\n\n" << white << std::endl;
 
 	AuthServer *server = new AuthServer();
 
-	server->Start();
+	if (server->Start() == false)
+	{
+		delete server;
+		return -1;
+	}
 	
 	while (!stopEvent)
 	{

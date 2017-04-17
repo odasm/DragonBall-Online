@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Build\</OutDir>
-    <IncludePath>$(SolutionDir)Shared\Source\Header;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Shared\Source\Header;$(SolutionDir)Shared\Source\SQLLibrary\mysql;$(SolutionDir)Shared\Source\SQLLibrary\;$(SolutionDir)Shared\Source\SQLLibrary\mysql\cppconn;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -142,6 +142,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>mysqlcppconn.lib;libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Shared\Source\SQLLibrary\mysql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Header\ConsoleColor.h" />
@@ -149,12 +153,24 @@
     <ClInclude Include="Source\Header\Encryptation.h" />
     <ClInclude Include="Source\Header\Logger.h" />
     <ClInclude Include="Source\Header\Opcodes.h" />
+    <ClInclude Include="Source\SQLLibrary\mysqlconn_wrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CPP\Encryptation.cpp" />
     <ClCompile Include="Source\CPP\Logger.cpp" />
+    <ClCompile Include="Source\SQLLibrary\mysqlconn_wrapper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\boost.1.63.0.0\build\native\boost.targets" Condition="Exists('..\packages\boost.1.63.0.0\build\native\boost.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\boost.1.63.0.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost.1.63.0.0\build\native\boost.targets'))" />
+  </Target>
 </Project>
