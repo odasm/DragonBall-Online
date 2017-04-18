@@ -1,3 +1,6 @@
 ####In Development Dragon Ball Online Server using Taiwan Game Client 1.69
 
--ATM the game don't receive the instruction correcly as the Encryptation system is not working.
+-The client get the instruction now.
+  - Need to build a correct packet to send:
+    - 4 otc header (ushort length - uchar bencrypt - ushort opcode - byte checksum) ?
+    
