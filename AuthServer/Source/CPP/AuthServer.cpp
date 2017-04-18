@@ -13,19 +13,23 @@ AuthServer::~AuthServer()
 }
 bool AuthServer::Start()
 {
-	MySQLConnWrapper* con = new MySQLConnWrapper();
-	con->setInfos("root", "", "tcp://127.0.0.1:3306", "world");
-	if (con->connect() == false)
+	sDB->setInfos("root", "", "tcp://127.0.0.1:3306", "dragonball");
+	if (sDB->connect() == false)
 	{
 		sLog->outError("Connecting to database failed...");
 		system("PAUSE");
-		delete con;
 		return false;
+	}
+	sDB->switchDb("dragonball");
+	sDB->prepare("SELECT * FROM accounts");
+	sDB->execute();
+	while (sDB->fetch())
+	{
+		sLog->outDetail("Database account contain: %s", sDB->getString("UserName"));
 	}
 	sLog->outDetail("Database connection established.");
 
 	network = new Listener<AuthSocket>(port, worker);
 	sLog->outString("AuthServer: Listener started, awaiting for connection...");
-	delete con;
 	return true;
 }

@@ -6,14 +6,14 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
+#include <mutex>
 
 using namespace std;
 
 class MySQLConnWrapper
 {
-
+	static MySQLConnWrapper DB;
 public:
-
 	/* Your MySQL server settings */
 	MySQLConnWrapper()
 	{
@@ -42,6 +42,11 @@ public:
 	username , password , host , db
 	*/
 	void setInfos(string, string, string, string);
+
+	static MySQLConnWrapper *get() noexcept
+	{ // pour obtenir le singleton
+		return &DB;
+	}
 private:
 	string host;
 	string user;
@@ -53,4 +58,7 @@ private:
 	sql::Statement* stmt;
 	sql::PreparedStatement* prep_stmt;
 	sql::ResultSet* res;
+
+	std::mutex m_mutex;
 };
+#define sDB MySQLConnWrapper::get()

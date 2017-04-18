@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Packet">
+      <UniqueIdentifier>{f34b7cbf-8e72-4746-81f3-b7b41f4d0515}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet\Auth">
+      <UniqueIdentifier>{d2a0b7b7-cd56-4664-8188-4e25629ea463}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -33,6 +39,12 @@
     <ClInclude Include="Source\Header\Packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Header\Packet\Auth\PacketAU.h">
+      <Filter>Packet\Auth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Header\Packet\Packets.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CPP\Listener.cpp">
@@ -46,6 +58,9 @@
     </ClCompile>
     <ClCompile Include="Source\CPP\Packet.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Header\Packet\Packets.cpp">
+      <Filter>Packet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

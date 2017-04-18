@@ -4,6 +4,8 @@
 #include <stdarg.h>
 #include <ConsoleColor.h>
 #include "../../../NetworkLib/Source/Header/Packet.h"
+#include "../../../NetworkLib/Source/Header/Packet/Packets.h"
+
 #  define ATTR_PRINTF(F,V)
 
 class Log
@@ -24,6 +26,7 @@ public:
 
 	void outTime();
 	void outPacketDebugger(Packet* paquet);
+	void outPacketDebugger(Packets* paquet);
 	static Log *get() noexcept 
 	{ // pour obtenir le singleton
 		return &singleton;

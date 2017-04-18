@@ -153,6 +153,7 @@
     <ClInclude Include="Source\Header\Encryptation.h" />
     <ClInclude Include="Source\Header\Logger.h" />
     <ClInclude Include="Source\Header\Opcodes.h" />
+    <ClInclude Include="Source\Header\ResultCode.h" />
     <ClInclude Include="Source\SQLLibrary\mysqlconn_wrapper.h" />
   </ItemGroup>
   <ItemGroup>

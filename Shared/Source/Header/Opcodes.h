@@ -1,6 +1,8 @@
 ﻿#ifndef __OPCODES__H
 # define __OPCODES__H
 
+#include <ResultCode.h>
+
 enum Opcodes
 {
 	/*

@@ -6,11 +6,10 @@
 
 typedef struct PACKETHEADER
 {
-	WORD		bEncrypt : 1;
-	WORD		wPacketLen : 15;
+	USHORT		bEncrypt : 1;
+	USHORT		wPacketLen : 15;
 	BYTE		bySequence;
 	BYTE		byChecksum;
-
 } PACKETHEADER, *LPPACKETHEADER;
 
 typedef struct PACKETDATA

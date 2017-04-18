@@ -1,4 +1,5 @@
 #include <Packet.h>
+#include <Logger.h>
 
 Packet::Packet()
 {
@@ -20,7 +21,8 @@ Packet::Packet(BYTE * pAttachBuffer)
 Packet::Packet(BYTE * pPacketData, WORD wPacketBodySize)
 {
 	Init();
-	InitUseExternalBuffer(pPacketData, wPacketBodySize);
+	InitUseInternalBuffer(NULL, (WORD)GetHeaderSize() + wPacketBodySize);
+	SetPacketLen(wPacketBodySize);
 }
 
 Packet::Packet(WORD wPacketBodySize)
@@ -118,16 +120,36 @@ void Packet::CopyFromBuffer(BYTE * pSrcBuffer, int nSize)
 
 bool Packet::IsValidHeader()
 {
-	if (NULL == mBufferPtr) return false;
-	if (GetUsedSize() < GetHeaderSize()) return false;
+	if (NULL == mBufferPtr)
+	{
+		sLog->outError("Packet::IsValidHeader(): NULL == mBufferPtr");
+		return false;
+	}
+	if (GetUsedSize() < GetHeaderSize())
+	{
+		sLog->outError("Packet::IsValidHeader(): GetUsedSize([%d]) <  GetHeaderSize([%d])", GetUsedSize(), GetHeaderSize());
+		return false;
+	}
 	return true;
 }
 
 bool Packet::IsValidPacket()
 {
-	if (NULL == mBufferPtr) return false;
-	if (false == IsValidHeader()) return false;
-	if (GetUsedSize() < GetPacketLen()) return false;
+	if (NULL == mBufferPtr)
+	{
+		sLog->outError("Packet::IsValidPacket(): NULL == mBufferPtr");
+		return false;
+	}
+	if (false == IsValidHeader())
+	{
+		sLog->outError("Packet::IsValidPacket(): false == IsValidHeader()");
+		return false;
+	}
+	if (GetUsedSize() < GetPacketLen())
+	{
+		sLog->outError("Packet::IsValidPacket(): GetUsedSize([%d]) < GetPacketLen([%d])", GetUsedSize(), GetPacketLen());
+		return false;
+	}
 	return true;
 }
 

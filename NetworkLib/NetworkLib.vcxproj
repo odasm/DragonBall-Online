@@ -152,6 +152,8 @@
     <ClInclude Include="Source\Header\NetworkThread.h" />
     <ClInclude Include="Source\Header\Packet.h" />
     <ClInclude Include="Source\Header\PacketBuffer.h" />
+    <ClInclude Include="Source\Header\Packet\Auth\PacketAU.h" />
+    <ClInclude Include="Source\Header\Packet\Packets.h" />
     <ClInclude Include="Source\Header\Socket.h" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +161,7 @@
     <ClCompile Include="Source\CPP\Packet.cpp" />
     <ClCompile Include="Source\CPP\PacketBuffer.cpp" />
     <ClCompile Include="Source\CPP\Socket.cpp" />
+    <ClCompile Include="Source\Header\Packet\Packets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.vcxproj">

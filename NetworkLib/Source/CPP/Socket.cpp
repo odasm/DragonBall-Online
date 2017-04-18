@@ -136,18 +136,21 @@ void Socket::Write(const char *buffer, int length)
 	switch (m_writeState)
 	{
 	case WriteState::Idle:
+	{
 		m_outBuffer->Write(buffer, length);
 		StartWriteFlushTimer();
 		break;
-
+	}
 	case WriteState::Buffering:
+	{
 		m_outBuffer->Write(buffer, length);
 		break;
-
+	}
 	case WriteState::Sending:
+	{
 		m_secondaryOutBuffer->Write(buffer, length);
 		break;
-
+	}
 	default:
 		assert(false);
 	}
@@ -223,4 +226,5 @@ void Socket::OnWriteComplete(const boost::system::error_code &error, size_t leng
 			[this](const boost::system::error_code &error, size_t length) { this->OnWriteComplete(error, length); });
 	else
 		m_writeState = WriteState::Idle;
+	sLog->outDetail("Socket: data sended: [%d]", length);
 }
