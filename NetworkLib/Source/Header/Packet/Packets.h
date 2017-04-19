@@ -7,10 +7,10 @@
 
 #define SAFE_FREE(ptr) if (ptr) free(ptr)
 
-typedef struct HEADER
+struct HEADER
 {
-	WORD		bEncrypt : 1;
-	WORD		wPacketLen : 15;
+	BYTE		bEncrypt;
+	BYTE		wPacketLen;
 	BYTE		bySequence;
 	BYTE		byChecksum;
 };

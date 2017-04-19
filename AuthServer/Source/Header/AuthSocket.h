@@ -7,14 +7,12 @@
 #include <Packet.h>
 #include <Packet\Packets.h>
 
-struct REALM_RESULT;
-
 class AuthSocket : public Socket
 {
 public:
 	AuthSocket(boost::asio::io_service &service, std::function<void(Socket *)> closeHandler);
 	bool _HandleOnLogin(Packet& packet);
-	void Send(void* pData, int size);
+	void Send(BYTE* pData, int size, int opcode);
 private:
 	bool _authed;
 	virtual bool ProcessIncomingData() override;

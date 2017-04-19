@@ -33,11 +33,9 @@ struct sPACKETHEADER
 //
 //------------------------------------------------------------------
 #define BEGIN_PROTOCOL(opcode)						\
-struct s##opcode :									\
-	public sPACKETHEADER							\
+struct s##opcode 									\
 {													\
-	s##opcode() :									\
-		sPACKETHEADER(opcode)						\
+	s##opcode()										\
 	{												\
 	}
 

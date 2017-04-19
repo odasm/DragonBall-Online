@@ -74,6 +74,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Build\</OutDir>
+    <IncludePath>$(SolutionDir)NetworkLib\Source\Header\;$(SolutionDir)AuthServer\Source\Header\;$(SolutionDir)Shared\Source\Header\;$(SolutionDir)packages\boost.1.63.0.0\lib\native\include\boost\;$(SolutionDir)Shared\Source\SQLLibrary\;$(SolutionDir)Shared\Source\SQLLibrary\mysql\;$(SolutionDir)Shared\Source\SQLLibrary\mysql\cppconn;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -104,10 +106,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile />
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)packages\boost.1.63.0.0\compiled;$(SolutionDir)Shared\Source\SQLLibrary\mysql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mysqlcppconn.lib;libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

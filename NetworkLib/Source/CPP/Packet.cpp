@@ -61,6 +61,7 @@ void Packet::Destroy()
 
 	if (mAllocBuffer != nullptr)
 		free(mAllocBuffer);
+	mAllocBuffer = NULL;
 }
 
 void Packet::Attach(BYTE * pPacketBuffer)
@@ -81,7 +82,8 @@ void Packet::InitUseInternalBuffer(BYTE * pPacketBuffer, WORD wBufferUsedSize)
 	mBufferPtr = mAllocBuffer;
 	if (mBufferPtr)
 	{
-		if (pPacketBuffer) memcpy(mBufferPtr, pPacketBuffer, wBufferUsedSize);
+		if (pPacketBuffer) 
+			memcpy(mBufferPtr, pPacketBuffer, wBufferUsedSize);
 		pHeader = (LPPACKETHEADER)&mBufferPtr[0];
 		pData = (BYTE*)&mBufferPtr[GetHeaderSize()];
 		pEndPos = (wBufferUsedSize >= 1) ? &mBufferPtr[wBufferUsedSize - 1] : mBufferPtr;
@@ -105,6 +107,7 @@ void Packet::Realloc(int nSize)
 	if (mAllocBuffer != nullptr)
 		free(mAllocBuffer);
 	mAllocBuffer = (BYTE*)calloc(nSize, sizeof(BYTE));
+	memset(mAllocBuffer, 0, nSize);
 }
 
 void Packet::CopyToBuffer(BYTE * pDestBuffer, int nSize)
@@ -177,7 +180,31 @@ void Packet::WriteData(void * pSrc, int nSize)
 	mDataSize = mDataSize + (WORD)nSize;
 	SetPacketLen(GetPacketLen() + (WORD)nSize);
 }
+void Packet::SetPacket(Opcodes opcode)
+{
+	InitUseInternalBuffer(NULL, (WORD)GetHeaderSize());
+	pHeader->bEncrypt = 2;
+	pHeader->byChecksum = 3;
+	pHeader->bySequence = opcode;
+	pHeader->wPacketLen = 0;
+}
+void Packet::SetPacket(BYTE * pPacketData, WORD wPacketBodySize, Opcodes opcode)
+{
+	Realloc(wPacketBodySize + 4);
+	mBufferPtr = mAllocBuffer;
 
+	pHeader = (LPPACKETHEADER)&mBufferPtr[0];
+	pData = (BYTE*)&mBufferPtr[GetHeaderSize()];
+
+	pHeader->bEncrypt = static_cast<USHORT>(2 + wPacketBodySize);
+	pHeader->wPacketLen = static_cast<BYTE>(0);
+	pHeader->bySequence = static_cast<USHORT>(opcode);
+	pHeader->byChecksum = static_cast<BYTE>(3);
+
+	memcpy(&pData[0], &pPacketData[0], wPacketBodySize);
+	pDataWritePos = pData + wPacketBodySize;
+	mDataSize = wPacketBodySize + (WORD)GetHeaderSize();
+}
 void Packet::SetPacket(BYTE * pPacketData, WORD wPacketBodySize)
 {
 	if (NULL == mBufferPtr) return;

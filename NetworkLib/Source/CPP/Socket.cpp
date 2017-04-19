@@ -45,6 +45,7 @@ void Socket::Close()
 
 	if (m_closeHandler)
 		m_closeHandler(this);
+	ReadSkip(ReadLengthRemaining());
 }
 
 void Socket::StartAsyncRead()
@@ -114,8 +115,8 @@ void Socket::OnRead(const boost::system::error_code &error, size_t length)
 
 void Socket::OnError(const boost::system::error_code &error)
 {
-	//if (error != boost::asio::error::eof &&
-		//error != boost::asio::error::operation_aborted)
+	if (error != boost::asio::error::eof &&
+		error != boost::asio::error::operation_aborted)
 		sLog->outError("Socket::OnError.  %s.  Connection closed.", error.message().c_str());
 
 	if (!IsClosed())
@@ -226,5 +227,5 @@ void Socket::OnWriteComplete(const boost::system::error_code &error, size_t leng
 			[this](const boost::system::error_code &error, size_t length) { this->OnWriteComplete(error, length); });
 	else
 		m_writeState = WriteState::Idle;
-	sLog->outDetail("Socket: data sended: [%d]", length);
+	//sLog->outDetail("Socket: data sended: [%d]", length);
 }

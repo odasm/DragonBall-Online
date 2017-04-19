@@ -7,7 +7,7 @@
 class AuthServer
 {
 public:
-	AuthServer(int _port = 12345, int _workerThread = 1);
+	AuthServer(int _port = 50200, int _workerThread = 1);
 	~AuthServer();
 
 	bool Start();

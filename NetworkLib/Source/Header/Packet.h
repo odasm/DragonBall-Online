@@ -3,11 +3,12 @@
 
 #include <Windows.h>
 #include <stdlib.h>
+#include <Opcodes.h>
 
 typedef struct PACKETHEADER
 {
-	USHORT		bEncrypt : 1;
-	USHORT		wPacketLen : 15;
+	BYTE		bEncrypt;
+	BYTE		wPacketLen;
 	BYTE		bySequence;
 	BYTE		byChecksum;
 } PACKETHEADER, *LPPACKETHEADER;
@@ -47,7 +48,10 @@ public:
 	void ReadData(void * pDest, int nSize);
 	void WriteData(void * pSrc, int nSize);
 	void SetPacket(BYTE * pPacketData, WORD wPacketBodySize);
+	void SetPacket(Opcodes opcode);
+	void SetPacket(BYTE * pPacketData, WORD wPacketBodySize, Opcodes opcode);
 	void SetPacketLen(WORD wPacketLen);
+
 	void SetUsedSize(WORD wSize) { mDataSize = wSize; }
 	void SetPacketLenToUsedSize() { mDataSize = GetPacketLen(); }
 	void AdjustPacketLen(WORD wPacketLen) { SetPacketLen(wPacketLen); SetPacketLenToUsedSize(); }
