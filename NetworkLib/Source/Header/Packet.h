@@ -7,8 +7,8 @@
 
 typedef struct PACKETHEADER
 {
-	BYTE		bEncrypt;
-	BYTE		wPacketLen;
+	WORD		bEncrypt : 1;
+	WORD		wPacketLen : 15;
 	BYTE		bySequence;
 	BYTE		byChecksum;
 } PACKETHEADER, *LPPACKETHEADER;
@@ -17,6 +17,7 @@ typedef struct PACKETDATA
 {
 	PACKETDATA() {}
 	PACKETDATA(WORD opcode) :wOpCode(opcode) {}
+	BYTE		THING;
 	WORD		wOpCode;
 } PACKETDATA, *LPPACKETDATA;
 

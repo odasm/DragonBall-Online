@@ -39,6 +39,7 @@ bool Socket::Open()
 void Socket::Close()
 {
 	assert(!IsClosed());
+	sLog->outDebug("Client disconnected: [%s]", m_address);
 	boost::system::error_code ec;
 	m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
 	m_socket.close();

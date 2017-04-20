@@ -25,21 +25,33 @@ struct sPACKETHEADER
 {
 	sPACKETHEADER(BYTE wGivenOpCode) :
 		wOpCode(wGivenOpCode) {}
-
-	BYTE			wOpCode;
+	BYTE		bEncrypt;
+	BYTE		wPacketLen;
+	BYTE		wOpCode;
+	BYTE		byChecksum;
 };
 //------------------------------------------------------------------
 //------------------------------------------------------------------
 //
 //------------------------------------------------------------------
 #define BEGIN_PROTOCOL(opcode)						\
+struct s##opcode :									\
+	public sPACKETHEADER							\
+{													\
+	s##opcode() :									\
+		sPACKETHEADER(opcode)						\
+	{												\
+	}
+
+#define END_PROTOCOL()	};
+/*#define BEGIN_PROTOCOL(opcode)						\
 struct s##opcode 									\
 {													\
 	s##opcode()										\
 	{												\
 	}
 
-#define END_PROTOCOL()	};
+#define END_PROTOCOL()	};*/
 //------------------------------------------------------------------
 //------------------------------------------------------------------
 //

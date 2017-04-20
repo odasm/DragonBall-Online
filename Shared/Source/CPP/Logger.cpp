@@ -109,25 +109,3 @@ void Log::outPacketDebugger(Packet* paquet)
 	std::cout << green  << "-----------------------------------" << std::endl;
 	std::cout << white;
 }
-void Log::outPacketDebugger(Packets* paquet)
-{
-	/*if (paquet == nullptr)
-	{
-		sLog->outError("Packet logger: null value");
-		return;
-	}
-	outTime();
-	std::cout << green << "[PACKET]: " << std::endl;
-	std::cout << "-----------------------------------" << std::endl;
-	std::cout << "\tPacket Length: \t\t\t" << yellow << paquet->GetFullPacketSize() << std::endl;
-	void* addr = paquet->GetPacketData();
-	std::cout << green << "\ttPacket Data: \t\t\t" << yellow << &addr << std::endl;
-	std::cout << green << "\ttPacket Data Size: \t\t" << yellow << paquet->GetPacketBodySize() << std::endl;
-
-	std::cout << green << "\tHeader Encrypted: \t\t" << yellow << (paquet->GetPacketHeader()->bEncrypt ? "true" : "false") << std::endl;
-	std::cout << green << "\ttHeader Length: \t\t" << yellow << (int)paquet->GetHeaderSize() << std::endl;
-	std::cout << green << "\ttHeader byChecksum: \t\t" << yellow << (int)paquet->GetPacketHeader()->byChecksum << std::endl;
-	std::cout << green << "\ttHeader byOpcode: \t\t" << yellow << (int)paquet->GetPacketHeader()->byOpcode << std::endl;
-	std::cout << green << "-----------------------------------" << std::endl;
-	std::cout << white;*/
-}

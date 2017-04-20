@@ -183,10 +183,19 @@ void Packet::WriteData(void * pSrc, int nSize)
 void Packet::SetPacket(Opcodes opcode)
 {
 	InitUseInternalBuffer(NULL, (WORD)GetHeaderSize());
-	pHeader->bEncrypt = 2;
-	pHeader->byChecksum = 3;
+	/*BYTE* data = new BYTE(4);
+
+	data[0] = 2;
+	data[1] = 0;
+	data[2] = opcode;
+	data[3] = 3;
+
+	memcpy(&pHeader[0], &data[0], 4);
+	delete data;*/
+	pHeader->bEncrypt = 0;
+	pHeader->wPacketLen = 2;
 	pHeader->bySequence = opcode;
-	pHeader->wPacketLen = 0;
+	pHeader->byChecksum = 3;
 }
 void Packet::SetPacket(BYTE * pPacketData, WORD wPacketBodySize, Opcodes opcode)
 {
@@ -196,10 +205,19 @@ void Packet::SetPacket(BYTE * pPacketData, WORD wPacketBodySize, Opcodes opcode)
 	pHeader = (LPPACKETHEADER)&mBufferPtr[0];
 	pData = (BYTE*)&mBufferPtr[GetHeaderSize()];
 
-	pHeader->bEncrypt = static_cast<USHORT>(2 + wPacketBodySize);
-	pHeader->wPacketLen = static_cast<BYTE>(0);
-	pHeader->bySequence = static_cast<USHORT>(opcode);
-	pHeader->byChecksum = static_cast<BYTE>(3);
+	/*BYTE* data = new BYTE(4);
+
+	data[0] = 2 + wPacketBodySize;
+	data[1] = 0;
+	data[2] = opcode;
+	data[3] = 3;
+
+	memcpy(&pHeader[0], &data[0], 4);
+	delete data;*/
+	pHeader->bEncrypt = 0;
+	pHeader->wPacketLen = 2 + wPacketBodySize;
+	pHeader->bySequence = opcode;
+	pHeader->byChecksum = 3;
 
 	memcpy(&pData[0], &pPacketData[0], wPacketBodySize);
 	pDataWritePos = pData + wPacketBodySize;

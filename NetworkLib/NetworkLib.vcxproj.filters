@@ -42,9 +42,6 @@
     <ClInclude Include="Source\Header\Packet\Auth\PacketAU.h">
       <Filter>Packet\Auth</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Header\Packet\Packets.h">
-      <Filter>Packet</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CPP\Listener.cpp">
@@ -58,9 +55,6 @@
     </ClCompile>
     <ClCompile Include="Source\CPP\Packet.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Header\Packet\Packets.cpp">
-      <Filter>Packet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

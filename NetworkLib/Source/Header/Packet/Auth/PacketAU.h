@@ -16,7 +16,7 @@ struct sSERVER_INFO
 	char		szCharacterServerIP[64 + 1];
 	WORD		wCharacterServerPortForClient;
 	DWORD		dwLoad;
-	WORD		unknow;
+	DWORD		unknow;
 };
 //------------------------------------------------------------------
 BEGIN_PROTOCOL(AU_HEARTBEAT)
@@ -34,6 +34,10 @@ BYTE				byServerInfoCount;
 
 sSERVER_INFO		CharServerInfo;
 END_PROTOCOL()
+//------------------------------------------------------------------
 BEGIN_PROTOCOL(AU_COMMERCIAL_SETTING_NFY)
+END_PROTOCOL()
+//------------------------------------------------------------------
+BEGIN_PROTOCOL(AU_LOGIN_DISCONNECT_RES)
 END_PROTOCOL()
 #pragma pack()

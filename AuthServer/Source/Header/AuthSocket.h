@@ -5,7 +5,6 @@
 #include <boost/asio.hpp>
 #include <functional>
 #include <Packet.h>
-#include <Packet\Packets.h>
 
 class AuthSocket : public Socket
 {
@@ -15,7 +14,6 @@ public:
 	bool _ProcessLoginPacket(Packet& packet);
 	void Send(BYTE* pData, int size, int opcode);
 private:
-	bool _authed;
 	virtual bool ProcessIncomingData() override;
 	virtual void OnConnectionDone() override;
 };
