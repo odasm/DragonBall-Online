@@ -57,30 +57,54 @@ void AuthSocket::Send(BYTE* pData, int size, int opcode)
 	sLog->outPacketDebugger(&packet);
 	Write((char*)&packet, size);
 }
+bool AuthSocket::_ProcessLoginPacket(Packet& packet)
+{
+	if (packet.GetPacketHeader()->bySequence == Opcodes::UA_LOGIN_TW_REQ) // Get the login request data
+	{
+		bool val = _HandleOnLogin(packet);
+
+		return val;
+	}
+	else if (packet.GetPacketHeader()->bySequence == Opcodes::UA_LOGIN_DISCONNECT_REQ)
+	{
+		Packet disconnect;
+		disconnect.SetPacket(Opcodes::AU_LOGIN_DISCONNECT_RES);
+		Write((char*)disconnect.GetPacketBuffer(), 4);
+		disconnect.Destroy();
+
+		return true;
+	}
+}
 bool AuthSocket::_HandleOnLogin(Packet& packet)
 {
+	UA_LOGIN_REQ *req = (UA_LOGIN_REQ*)packet.GetPacketData();
+	char username[16];
+	char password[16];
+	wcstombs(username, req->awchUserId, 16);
+	wcstombs(password, req->awchPasswd, 16);
+
 	Packet commercial_setting;
 	commercial_setting.SetPacket(Opcodes::AU_COMMERCIAL_SETTING_NFY);
 	Write((char*)commercial_setting.GetPacketBuffer(), 4);
 	commercial_setting.Destroy();
 
-	UA_LOGIN_REQ *req = (UA_LOGIN_REQ*)packet.GetPacketData();
-
 	sAU_LOGIN_RES res;
 	memset(&res, 0, sizeof(sAU_LOGIN_RES));
+	
+	int AccountID = sDB->GetAccountID(username, password);
 
-	res.wResultCode = ResultCodes::AUTH_SUCCESS;
+	res.wResultCode = sDB->ValidateLoginRequest(username, password, AccountID);
 	memcpy(res.awchUserId, req->awchUserId, 16);
 	memcpy(res.abyAuthKey, "SE@WASDE#$RFWD@D", 16);
-	res.AccountID = 1;
+	res.AccountID = AccountID;
 	res.lastChannelID = 255;
-	res.lastServerID = 255;
+	res.lastServerID = sDB->GetLastServerID(AccountID);
 	res.dev = 65535;
 
 	res.byServerInfoCount = 1;
 	res.CharServerInfo.dwLoad = 0;
 	memcpy(res.CharServerInfo.szCharacterServerIP, "127.0.0.1", strlen("127.0.0.1"));
-	res.CharServerInfo.wCharacterServerPortForClient = 50200;
+	res.CharServerInfo.wCharacterServerPortForClient = 50200; // try to use AuthServer for Auth & Char ?
 	res.CharServerInfo.unknow = 65535;
 
 	Packet result;
@@ -105,13 +129,8 @@ bool AuthSocket::ProcessIncomingData()
 			///		 DECRYPT PACKET HERE ????		\\\
 		*/
 		//sLog->outPacketDebugger(&packet);
-		if (pk->GetPacketHeader()->bySequence == Opcodes::UA_LOGIN_TW_REQ) // Get the login request data
-		{
-			bool val = _HandleOnLogin(*pk);
-			ReadSkip(sizeInc);
-			delete pk;
-			return val;
-		}
+		bool process = false;
+		sLog->outDebug("Packet_[%u]", pk->GetPacketHeader()->bySequence);
 		if (pk->GetPacketHeader()->bySequence == 4)
 		{
 			uint8 rawData2[] = { 0x22, 0x00, 0x10, 0x00, 0x49, 0xD1, 0xF1, 0x1C, 0x6D, 0x58, 0xF9, 0xC5, 0x30, 0x26, 0xA4, 0x7B,
@@ -119,26 +138,20 @@ bool AuthSocket::ProcessIncomingData()
 				0x38, 0x80, 0x14, 0x72 };
 			Write((char*)rawData2, sizeof(rawData2));
 			memset(&rawData2, 0, sizeof(rawData2));
-		}
-		else if (pk->GetPacketHeader()->bySequence == Opcodes::UA_LOGIN_DISCONNECT_REQ)
-		{
-			Packet disconnect;
-			disconnect.SetPacket(Opcodes::AU_LOGIN_DISCONNECT_RES);
-			Write((char*)disconnect.GetPacketBuffer(), 4);
-			disconnect.Destroy();
-			ReadSkip(sizeInc);
-			delete pk;
-			return true;
+			process = true;
 		}
 		else if (pk->GetPacketHeader()->bySequence == Opcodes::SYS_ALIVE)
 		{
-			ReadSkip(sizeInc);
-			delete pk;
-			return true;
+			process = true;
+		}
+		
+		else if (pk->GetPacketHeader()->bySequence >= Opcodes::UA_OPCODE_BEGIN && pk->GetPacketHeader()->bySequence <= Opcodes::UA_LOGIN_DISCONNECT_REQ)
+		{
+			process = _ProcessLoginPacket(*pk);
 		}
 		else
 		{
-			//sLog->outError("Packet_[%d] Unknow", pk->GetPacketHeader()->bySequence);
+			sLog->outError("Packet_[%u] Unknow", pk->GetPacketHeader()->bySequence);
 			ReadSkip(sizeInc);
 			delete pk;
 			return false;
@@ -146,7 +159,7 @@ bool AuthSocket::ProcessIncomingData()
 		/// if we reach here, it means that a valid opcode was found and the handler completed successfully
 		ReadSkip(sizeInc);
 		delete pk;
-		return true;
+		return process;
 	}
 	return true;
 }

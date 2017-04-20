@@ -47,6 +47,9 @@
     <ClCompile Include="Source\SQLLibrary\mysqlconn_wrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\SQLLibrary\Request\Request.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

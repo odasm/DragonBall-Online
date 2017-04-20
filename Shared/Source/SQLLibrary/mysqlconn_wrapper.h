@@ -7,6 +7,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <mutex>
+#include <ResultCode.h>
 
 using namespace std;
 
@@ -47,6 +48,9 @@ public:
 	{ // pour obtenir le singleton
 		return &DB;
 	}
+	ResultCodes ValidateLoginRequest(char *username, char* password, int accid);
+	int GetAccountID(char* username, char* password);
+	int GetLastServerID(int accid);
 private:
 	string host;
 	string user;

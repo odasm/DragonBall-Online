@@ -167,6 +167,7 @@
     <ClCompile Include="Source\CPP\Encryptation.cpp" />
     <ClCompile Include="Source\CPP\Logger.cpp" />
     <ClCompile Include="Source\SQLLibrary\mysqlconn_wrapper.cpp" />
+    <ClCompile Include="Source\SQLLibrary\Request\Request.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

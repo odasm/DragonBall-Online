@@ -13,7 +13,7 @@ AuthServer::~AuthServer()
 }
 bool AuthServer::Start()
 {
-	/*sDB->setInfos("root", "", "tcp://127.0.0.1:3306", "dragonball");
+	sDB->setInfos("root", "", "tcp://127.0.0.1:3306", "dragonball");
 	if (sDB->connect() == false)
 	{
 		sLog->outError("Connecting to database failed...");
@@ -21,13 +21,13 @@ bool AuthServer::Start()
 		return false;
 	}
 	sDB->switchDb("dragonball");
-	sDB->prepare("SELECT * FROM accounts");
+	sDB->prepare("SELECT * FROM account");
 	sDB->execute();
 	while (sDB->fetch())
 	{
-		sLog->outDetail("Database account contain: %s", sDB->getString("UserName"));
+		sLog->outDetail("Database: account [%d]", sDB->rowsCount());
 	}
-	sLog->outDetail("Database connection established.");*/
+	sLog->outDetail("Database connection established.");
 
 	network = new Listener<AuthSocket>(port, worker);
 	sLog->outString("AuthServer: Listener started, awaiting for connection...");
