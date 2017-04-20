@@ -49,8 +49,6 @@ public:
 	void ReadData(void * pDest, int nSize);
 	void WriteData(void * pSrc, int nSize);
 	void SetPacket(BYTE * pPacketData, WORD wPacketBodySize);
-	void SetPacket(Opcodes opcode);
-	void SetPacket(BYTE * pPacketData, WORD wPacketBodySize, Opcodes opcode);
 	void SetPacketLen(WORD wPacketLen);
 
 	void SetUsedSize(WORD wSize) { mDataSize = wSize; }

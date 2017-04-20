@@ -25,8 +25,8 @@ struct sPACKETHEADER
 {
 	sPACKETHEADER(BYTE wGivenOpCode) :
 		wOpCode(wGivenOpCode) {}
+	BYTE		wPacketSize;
 	BYTE		bEncrypt;
-	BYTE		wPacketLen;
 	BYTE		wOpCode;
 	BYTE		byChecksum;
 };
