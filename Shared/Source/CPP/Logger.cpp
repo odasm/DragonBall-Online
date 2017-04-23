@@ -5,6 +5,8 @@
 #include <cstdarg>
 #include <time.h>
 #include <ctime>
+#include <fstream>
+#include <string>
 
 Log Log::singleton;
 
@@ -21,7 +23,9 @@ void Log::outTime()
 	localtime_s(timeinfo, &rawtime);
 	strftime(buffer, sizeof(buffer), "%I:%M:%S", timeinfo);
 	std::string str(buffer);
+
 	std::cout << white << "[" << str.c_str() << "] " << white;
+
 	delete timeinfo;
 }
 void Log::outString()
@@ -108,4 +112,38 @@ void Log::outPacketDebugger(Packet* paquet)
 	std::cout << green << "\ttHeader bySequence: \t\t" << yellow << (int)paquet->GetPacketHeader()->bySequence << std::endl;
 	std::cout << green  << "-----------------------------------" << std::endl;
 	std::cout << white;
+}
+void Log::outDebugToFile(BYTE* data, int size, WORD opcode)
+{
+	if (data == NULL)
+	{
+		outError("outDebugToFile error: data nullptr");
+	}
+	time_t rawtime;
+	struct tm * timeinfo = new struct tm;
+	char buffer[80];
+	time(&rawtime);
+	localtime_s(timeinfo, &rawtime);
+	strftime(buffer, sizeof(buffer), "%I:%M:%S", timeinfo);
+	std::string str(buffer);
+	delete timeinfo;
+	char* time = (char*)str.c_str();
+	for (int i = 0; i < strlen(time); i++)
+	{
+		if (time[i] == ':')
+			time[i] = '-';
+	}
+	std::string file = ".\packets\Packet_" + std::to_string(opcode) + "_" + time + ".dat";
+	std::ofstream myfile;
+	myfile.open(file);
+
+	for (int i = 0; i < size; i++)
+	{
+		std::string value;
+
+		value = "[" + std::to_string(i) + "]" + " : " + "[" + std::to_string(data[i]) + "]";
+		myfile << value;
+		myfile << "\n";
+	}
+	myfile.close();
 }

@@ -19,16 +19,31 @@ typedef std::uint8_t uint8;
 #pragma warning(disable : 4328)
 
 //------------------------------------------------------------------
-//
+enum eDBO_SERVER_STATUS
+{
+	DBO_SERVER_STATUS_UP = 0,
+	DBO_SERVER_STATUS_DOWN,
+	DBO_SERVER_STATUS_LOCKED
+};
 //------------------------------------------------------------------
+//------------------------------------------------------------------
+typedef unsigned int ACCOUNTID;
+typedef BYTE SERVERFARMID;
+const SERVERFARMID INVALID_SERVERFARMID = 0xFF;
+//------------------------------------------------------------------
+typedef unsigned char SLOTID;
+const SLOTID INVALID_SLOTID = 0xFF;
+//------------------------------------------------------------------
+typedef unsigned int CHARACTERID;
+const CHARACTERID INVALID_CHARACTERID = 0xFFFFFFFF;
 struct sPACKETHEADER
 {
 	sPACKETHEADER(BYTE wGivenOpCode) :
 		wOpCode(wGivenOpCode) {}
 	BYTE		wPacketSize;
 	BYTE		bEncrypt;
-	BYTE		wOpCode;
-	BYTE		byChecksum;
+	WORD		wOpCode;
+	//BYTE		byChecksum;
 };
 //------------------------------------------------------------------
 //------------------------------------------------------------------
@@ -47,10 +62,9 @@ struct s##opcode :									\
 /*#define BEGIN_PROTOCOL(opcode)						\
 struct s##opcode 									\
 {													\
-	s##opcode()										\
-	{												\
-	}
-
+s##opcode()										\
+{												\
+}
 #define END_PROTOCOL()	};*/
 //------------------------------------------------------------------
 //------------------------------------------------------------------

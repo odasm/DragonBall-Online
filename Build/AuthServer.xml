@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AuthServer>
+  <!-- Server Configuration -->
+  <Server IP="127.0.0.1" Port="50200" />
+  <MySQL Host="tcp://127.0.0.1:3306" Database="dragonball" User="root" Password="" />
+  
+  <!-- Char Server List Configuration -->
+  <CharServerList Count="1">
+    <CharServer1 IP="127.0.0.1" Port="50300" />
+  </CharServerList>
+</AuthServer>

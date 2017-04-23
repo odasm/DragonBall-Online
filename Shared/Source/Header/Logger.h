@@ -25,13 +25,11 @@ public:
 
 	void outTime();
 	void outPacketDebugger(Packet* paquet);
+	void outDebugToFile(BYTE* data, int size, WORD opcode);
 	static Log *get() noexcept 
 	{ // pour obtenir le singleton
 		return &singleton;
 	}
-
-private:
-
 };
 
 #define sLog Log::get()

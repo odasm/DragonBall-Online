@@ -156,6 +156,8 @@
     <ClInclude Include="Source\Header\Packet.h" />
     <ClInclude Include="Source\Header\PacketBuffer.h" />
     <ClInclude Include="Source\Header\Packet\Auth\PacketAU.h" />
+    <ClInclude Include="Source\Header\Packet\Char\PacketCU.h" />
+    <ClInclude Include="Source\Header\Packet\Char\PacketUC.h" />
     <ClInclude Include="Source\Header\Socket.h" />
   </ItemGroup>
   <ItemGroup>

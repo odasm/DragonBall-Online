@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\XmlParser">
+      <UniqueIdentifier>{bac4c796-f6e2-47c8-b480-ddaed7b72a50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\XmlParser">
+      <UniqueIdentifier>{f478f613-f003-47fb-b6b7-852f36ab4c65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Header\Logger.h">
@@ -30,11 +36,14 @@
     <ClInclude Include="Source\Header\ConsoleColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\SQLLibrary\mysqlconn_wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Header\ResultCode.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\SQLLibrary\mysqlconn_wrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Header\XmlParser.h">
+      <Filter>Header Files\XmlParser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -44,11 +53,14 @@
     <ClCompile Include="Source\CPP\Encryptation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\SQLLibrary\mysqlconn_wrapper.cpp">
+    <ClCompile Include="Source\Library\SQLLibrary\mysqlconn_wrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\SQLLibrary\Request\Request.cpp">
+    <ClCompile Include="Source\Library\SQLLibrary\Request\Request.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CPP\XmlParser.cpp">
+      <Filter>Source Files\XmlParser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

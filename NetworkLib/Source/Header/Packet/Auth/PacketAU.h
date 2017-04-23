@@ -4,12 +4,6 @@
 #include <Opcodes.h>
 
 //------------------------------------------------------------------
-//
-//------------------------------------------------------------------
-typedef unsigned int ACCOUNTID;
-typedef BYTE SERVERFARMID;
-//------------------------------------------------------------------
-
 #pragma pack(1)
 struct sSERVER_INFO
 {
@@ -32,7 +26,7 @@ SERVERFARMID		lastChannelID;
 DWORD				dev;
 BYTE				byServerInfoCount;
 
-sSERVER_INFO		CharServerInfo;
+sSERVER_INFO		CharServerInfo[10];
 END_PROTOCOL()
 //------------------------------------------------------------------
 BEGIN_PROTOCOL(AU_COMMERCIAL_SETTING_NFY)

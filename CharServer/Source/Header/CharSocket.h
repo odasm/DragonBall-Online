@@ -10,8 +10,11 @@ class CharSocket : public Socket
 {
 public:
 	CharSocket(boost::asio::io_service &service, std::function<void(Socket *)> closeHandler);
-	bool _ProcessCharPacket(Packet& packet);
-	void Send(BYTE* pData, int size, int opcode);
+	bool _ProcessCharPacket(Packet& packet, WORD wOpCode);
+	// Packet Management
+	bool GetLoginRequest(Packet &packet);
+	bool GetCharacterServerList(Packet &packet, bool one);
+	bool GetCharacterLoad(Packet &packet);
 private:
 	virtual bool ProcessIncomingData() override;
 	virtual void OnConnectionDone() override;

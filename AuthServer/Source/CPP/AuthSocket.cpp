@@ -6,12 +6,8 @@
 #include <Encryptation.h>
 #include <mysqlconn_wrapper.h>
 #include <Packet\Auth\PacketAU.h>
-
-enum eStatus
-{
-	STATUS_CONNECTED = 0,
-	STATUS_AUTHED
-};
+#include <XmlParser.h>
+#include <string>
 
 struct UA_LOGIN_REQ
 {
@@ -50,7 +46,7 @@ bool AuthSocket::_ProcessLoginPacket(Packet& packet)
 		res.wPacketSize = 2;
 		res.bEncrypt = 0;
 		res.wOpCode = Opcodes::AU_LOGIN_DISCONNECT_RES;
-		res.byChecksum = 3;
+		//res.byChecksum = 3;
 
 		Write((char*)&res, sizeof(sAU_LOGIN_DISCONNECT_RES));
 		res = {};
@@ -71,7 +67,7 @@ bool AuthSocket::_HandleOnLogin(Packet& packet)
 	commercial.wPacketSize = 2;
 	commercial.bEncrypt = 0;
 	commercial.wOpCode = Opcodes::AU_COMMERCIAL_SETTING_NFY;
-	commercial.byChecksum = 3;
+	//commercial.byChecksum = 3;
 
 	Write((char*)&commercial, sizeof(sAU_COMMERCIAL_SETTING_NFY));
 	commercial = {};
@@ -79,25 +75,36 @@ bool AuthSocket::_HandleOnLogin(Packet& packet)
 	sAU_LOGIN_RES res;
 	memset(&res, 0, sizeof(sAU_LOGIN_RES));
 
-	res.wPacketSize = sizeof(sAU_LOGIN_RES) - 4; // packet body size (packet size - header)
+	res.wPacketSize = sizeof(sAU_LOGIN_RES) - 2; // packet body size (packet size - header)
 	res.bEncrypt = 0;
 	res.wOpCode = Opcodes::AU_LOGIN_RES;
-	res.byChecksum = 3;
+	//res.byChecksum = 3;
 
-	res.wResultCode = 100;
+	int AccountID = sDB->GetAccountID(username, password);
+	res.wResultCode = sDB->ValidateLoginRequest(username, password, AccountID);
 	memcpy(res.awchUserId, req->awchUserId, 16);
 	memcpy(res.abyAuthKey, "SE@WASDE#$RFWD@D", 16);
-	res.AccountID = 0;
+	res.AccountID = AccountID;
 	res.lastChannelID = 255;
-	res.lastServerID = 255;
+	res.lastServerID = sDB->GetLastServerID(AccountID);
 	res.dev = 65535;
+	res.byServerInfoCount = sXmlParser->GetInt("CharServerList", "Count");
+	int i = 0;
+	for (i = 0; i < res.byServerInfoCount; ++i)
+	{
+		int srv = i + 1;
+		std::string fieldName = "CharServer";
+		fieldName.append(std::to_string(srv));
 
-	res.byServerInfoCount = 1;
-	res.CharServerInfo.dwLoad = 0;
-	memcpy(res.CharServerInfo.szCharacterServerIP, "127.0.0.1", strlen("127.0.0.1"));
-	res.CharServerInfo.wCharacterServerPortForClient = 50300;
-	res.CharServerInfo.unknow = 65535;
+		std::string addr = sXmlParser->GetChildStr("CharServerList", (char*)fieldName.c_str(), "IP");
+		int port = sXmlParser->GetChildInt("CharServerList", (char*)fieldName.c_str(), "Port");
 
+		res.CharServerInfo[i].dwLoad = 0;
+		memcpy(res.CharServerInfo[i].szCharacterServerIP, addr.c_str(), strlen(addr.c_str()));
+		res.CharServerInfo[i].wCharacterServerPortForClient = port;
+		res.CharServerInfo[i].unknow = 65535;
+	}
+	res.wPacketSize = (res.wPacketSize - (sizeof(sSERVER_INFO) * (9 - i))); // remove unused struct size (9 because we need always 1 struct size to send)
 	Write((char*)&res, sizeof(sAU_LOGIN_RES));
 	res = {};
 	return true;
@@ -110,7 +117,7 @@ bool AuthSocket::ProcessIncomingData()
 		Packet *pk = new Packet();
 		pk->AttachData((BYTE*)InPeak(), sizeInc);
 		PACKETDATA *header = (PACKETDATA*)InPeak();
-		sLog->outDebug("~~~~~~~ opcode %u ~~~~~~~", header->wOpCode);
+		sLog->outDebug("~~~~~~~ opcode %u ~~~~~~~ checksum %u", header->wOpCode, pk->GetPacketHeader()->byChecksum);
 
 		/*
 			///		 DECRYPT PACKET HERE ????		\\\

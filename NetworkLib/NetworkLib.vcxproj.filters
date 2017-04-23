@@ -19,6 +19,9 @@
     <Filter Include="Packet\Auth">
       <UniqueIdentifier>{d2a0b7b7-cd56-4664-8188-4e25629ea463}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Packet\Char">
+      <UniqueIdentifier>{ea9a6a4a-cb7f-4288-9627-35d06793d650}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -41,6 +44,12 @@
     </ClInclude>
     <ClInclude Include="Source\Header\Packet\Auth\PacketAU.h">
       <Filter>Packet\Auth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Header\Packet\Char\PacketUC.h">
+      <Filter>Packet\Char</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Header\Packet\Char\PacketCU.h">
+      <Filter>Packet\Char</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -17,20 +17,6 @@ void CharSocket::OnConnectionDone()
 	Write((char*)rawData, sizeof(rawData));
 	memset(&rawData, 0, sizeof(rawData));
 }
-void CharSocket::Send(BYTE* pData, int size, int opcode)
-{
-	Packet packet(size);
-	packet.SetPacket(pData, size);
-
-	packet.GetPacketHeader()->bySequence = opcode;
-	packet.GetPacketHeader()->byChecksum = 7;
-
-	sLog->outPacketDebugger(&packet);
-	Write((char*)&packet, size);
-}
-bool CharSocket::_ProcessCharPacket(Packet& packet)
-{
-}
 bool CharSocket::ProcessIncomingData()
 {
 	while (ReadLengthRemaining() > 0)
@@ -39,13 +25,13 @@ bool CharSocket::ProcessIncomingData()
 		Packet *pk = new Packet();
 		pk->AttachData((BYTE*)InPeak(), sizeInc);
 		PACKETDATA *header = (PACKETDATA*)InPeak();
-		sLog->outDebug("~~~~~~~ opcode %u ~~~~~~~", header->wOpCode);
+		sLog->outDebug("~~~~~~~ opcode %u ~~~~~~~ checksum %u", header->wOpCode, pk->GetPacketHeader()->byChecksum);
 		/*
 		///		 DECRYPT PACKET HERE ????		\\\
 		*/
 		//sLog->outPacketDebugger(&packet);
 		bool process = false;
-		if (pk->GetPacketHeader()->bySequence == 4)
+		if (header->wOpCode == 4)
 		{
 			uint8 rawData2[] = { 0x22, 0x00, 0x10, 0x00, 0x49, 0xD1, 0xF1, 0x1C, 0x6D, 0x58, 0xF9, 0xC5, 0x30, 0x26, 0xA4, 0x7B,
 				0xB2, 0xD8, 0x2C, 0x86, 0x58, 0x60, 0x7B, 0xDD, 0xF0, 0x77, 0xCF, 0x25, 0x48, 0xB3, 0x65, 0x45,
@@ -54,12 +40,18 @@ bool CharSocket::ProcessIncomingData()
 			memset(&rawData2, 0, sizeof(rawData2));
 			process = true;
 		}
-		else if (pk->GetPacketHeader()->bySequence == Opcodes::SYS_ALIVE)
+		else if (header->wOpCode == Opcodes::SYS_ALIVE)
 		{
 			process = true;
 		}
+		else if (header->wOpCode >= Opcodes::UC_DUMMY && header->wOpCode <= Opcodes::UC_CHAR_SERVERLIST_REQ)
+		{
+			process = _ProcessCharPacket(*pk, header->wOpCode);
+		}
 		else
 		{
+			sLog->outError("Packet_[%u] Unknow", header->wOpCode);
+
 			ReadSkip(sizeInc);
 			delete pk;
 			return false;

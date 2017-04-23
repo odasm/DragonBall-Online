@@ -11,7 +11,10 @@ public:
 	~CharServer();
 
 	bool Start();
+	bool ConnectToDatabase();
 private:
+	bool loadDataTable();
+
 	Listener<CharSocket>	*network;
 	int port;
 	int worker;
