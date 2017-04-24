@@ -2,11 +2,13 @@
 
 #include <Define.h>
 #include <Opcodes.h>
+#include <SharedDef.h>
+#include <SharedType.h>
 
 struct sUC_LOGIN_REQ
 {
 	ACCOUNTID		accountId;
-	BYTE			abyAuthKey[16];
+	BYTE			abyAuthKey[MAX_SIZE_USERID_UNICODE];
 	SERVERFARMID	serverID;
 };
 struct sUC_CHARACTER_LOAD_REQ
@@ -16,8 +18,8 @@ struct sUC_CHARACTER_LOAD_REQ
 };
 struct sUC_CHARACTER_ADD_REQ
 {
-	WCHAR			awchCharName[16 + 1];
-	DWORD			dwCodePage;
+	WCHAR			awchCharName[MAX_SIZE_CHAR_NAME_UNICODE + 1];
+	//DWORD			dwCodePage; //bug
 	BYTE			byRace;
 	BYTE			byClass;
 	BYTE			byGender;
@@ -26,4 +28,9 @@ struct sUC_CHARACTER_ADD_REQ
 	BYTE			byHairColor;
 	BYTE			bySkinColor;
 	BYTE			byBlood;
+	DWORD			unknown;
+};
+struct sUC_CHARACTER_DEL_REQ
+{
+	CHARACTERID		charId;
 };

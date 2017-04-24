@@ -49,7 +49,7 @@ public:
 template <typename SocketType>
 Listener<SocketType>::Listener(int port, int workerThreads) : m_acceptor(m_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
 {
-	sLog->outString("Listener will be initiate at port: %d and at %d workerThread", port, workerThreads);
+	sLog.outDebug("Listener will be initiate at port: %d and at %d workerThread", port, workerThreads);
 
 	m_workerThreads.reserve(workerThreads);
 	for (int i = 0; i < workerThreads; ++i)

@@ -45,6 +45,12 @@
     <ClInclude Include="Source\Header\XmlParser.h">
       <Filter>Header Files\XmlParser</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Header\SharedDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Header\SharedType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CPP\Logger.cpp">

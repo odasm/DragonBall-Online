@@ -38,10 +38,12 @@ int main()
 	}
 
 	delete server;
+	system("PAUSE");
 	return 0;
 }
 void signalHandler(int signum)
 {
-	std::cout << "Interrupt signal (" << signum << ") received.\n" << std::endl;
+	sLog.outError("Interrupt signal (%d) received.", signum);
+	system("PAUSE");
 	stopEvent = true;
 }

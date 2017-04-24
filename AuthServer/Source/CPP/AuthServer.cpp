@@ -21,30 +21,24 @@ bool AuthServer::ConnectToDatabase()
 	host = sXmlParser->GetStr("MySQL", "Host");
 	db = sXmlParser->GetStr("MySQL", "Database");
 
-	sDB->setInfos(user, password, host, db);
-	if (sDB->connect() == false)
-	{
-		sLog->outError("Connecting to database failed...");
-		system("PAUSE");
+	sDB.setInfos(user, password, host, db);
+	if (sDB.connect() == false)
 		return false;
-	}
-	sDB->switchDb(db);
-	sDB->prepare("SELECT * FROM account");
-	sDB->execute();
-	while (sDB->fetch())
-	{
-		sLog->outDetail("Database: account [%d]", sDB->rowsCount());
-	}
-	sLog->outDetail("Database connection established.");
+	sDB.switchDb(db);
+	sLog.outDetail("Database connection established.");
+	return true;
 }
 bool AuthServer::Start()
 {
 	if (sXmlParser->loadFile("AuthServer") == false)
 		return false;
+	sLog.SetLogLevel((LogLevel)sXmlParser->GetInt("LogLevel", "Value"));
 	if (ConnectToDatabase() == false)
+	{
+		sLog.outError("Database connection failed, exiting...");
 		return false;
-
+	}
 	network = new Listener<AuthSocket>(sXmlParser->GetInt("Server", "Port"), worker);
-	sLog->outString("AuthServer: Listener started, awaiting for connection...");
+	sLog.outString("AuthServer: Listener started on port: [%d]", sXmlParser->GetInt("Server", "Port"));
 	return true;
 }

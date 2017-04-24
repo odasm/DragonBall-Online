@@ -1,7 +1,7 @@
 #ifndef __PACKET__H
 #define __PACKET__H
 
-#include <Windows.h>
+#include <Define.h>
 #include <stdlib.h>
 #include <Opcodes.h>
 

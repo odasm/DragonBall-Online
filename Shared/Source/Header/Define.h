@@ -1,11 +1,18 @@
 #ifndef DEFINE_H
 #define DEFINE_H
 
-#  define WIN32_LEAN_AND_MEAN
-#  include <Windows.h>
-#  ifndef _WIN32_WINNT
-#    define _WIN32_WINNT 0x0603
-#  endif
+#pragma once
+
+#if !defined(_WIN32_WINNT)
+#define _WIN32_WINNT 0x0501 	
+#elif (_WIN32_WINNT < 0x0501)
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif
+
+#include <Windows.h>
+#include <stdlib.h>
+#include <cstdint>
 
 typedef std::int64_t int64;
 typedef std::int32_t int32;
@@ -16,7 +23,16 @@ typedef std::uint32_t uint32;
 typedef std::uint16_t uint16;
 typedef std::uint8_t uint8;
 
-#pragma warning(disable : 4328)
+#pragma warning(disable:4328)
+#pragma warning(disable:4819)
+#pragma warning(disable:4503)
+#pragma warning(disable:4099)
+#pragma warning(disable:4305)
+#pragma warning(disable:4267)
+#pragma warning(disable:4129)
+#pragma warning(disable:4309)
+#pragma warning(disable:4251)
+#pragma warning(disable:4006)
 
 //------------------------------------------------------------------
 enum eDBO_SERVER_STATUS
@@ -25,17 +41,7 @@ enum eDBO_SERVER_STATUS
 	DBO_SERVER_STATUS_DOWN,
 	DBO_SERVER_STATUS_LOCKED
 };
-//------------------------------------------------------------------
-//------------------------------------------------------------------
-typedef unsigned int ACCOUNTID;
-typedef BYTE SERVERFARMID;
-const SERVERFARMID INVALID_SERVERFARMID = 0xFF;
-//------------------------------------------------------------------
-typedef unsigned char SLOTID;
-const SLOTID INVALID_SLOTID = 0xFF;
-//------------------------------------------------------------------
-typedef unsigned int CHARACTERID;
-const CHARACTERID INVALID_CHARACTERID = 0xFFFFFFFF;
+
 struct sPACKETHEADER
 {
 	sPACKETHEADER(BYTE wGivenOpCode) :

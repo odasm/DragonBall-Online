@@ -3,10 +3,20 @@
 #include <iostream>
 #include <stdarg.h>
 #include <ConsoleColor.h>
-#include "../../../NetworkLib/Source/Header/Packet.h"
+#include <mutex>
+#include <shared_mutex>
+#include <memory>
 
 #  define ATTR_PRINTF(F,V)
+class Packet;
 
+enum LogLevel
+{
+	LOG_LVL_MINIMAL = 0, // unconditional and errors
+	LOG_LVL_BASIC = 1,
+	LOG_LVL_DETAIL = 2,
+	LOG_LVL_DEBUG = 3
+};
 class Log
 {
 	static Log singleton;
@@ -26,10 +36,14 @@ public:
 	void outTime();
 	void outPacketDebugger(Packet* paquet);
 	void outDebugToFile(BYTE* data, int size, WORD opcode);
-	static Log *get() noexcept 
-	{ // pour obtenir le singleton
-		return &singleton;
+	void SetLogLevel(int _level);
+	static Log& get() noexcept 
+	{
+		return singleton;
 	}
+private:
+	LogLevel logLevel;
 };
 
+// Logger singleton
 #define sLog Log::get()

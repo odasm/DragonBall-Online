@@ -125,12 +125,12 @@ bool Packet::IsValidHeader()
 {
 	if (NULL == mBufferPtr)
 	{
-		sLog->outError("Packet::IsValidHeader(): NULL == mBufferPtr");
+		sLog.outError("Packet::IsValidHeader(): NULL == mBufferPtr");
 		return false;
 	}
 	if (GetUsedSize() < GetHeaderSize())
 	{
-		sLog->outError("Packet::IsValidHeader(): GetUsedSize([%d]) <  GetHeaderSize([%d])", GetUsedSize(), GetHeaderSize());
+		sLog.outError("Packet::IsValidHeader(): GetUsedSize([%d]) <  GetHeaderSize([%d])", GetUsedSize(), GetHeaderSize());
 		return false;
 	}
 	return true;
@@ -140,17 +140,17 @@ bool Packet::IsValidPacket()
 {
 	if (NULL == mBufferPtr)
 	{
-		sLog->outError("Packet::IsValidPacket(): NULL == mBufferPtr");
+		sLog.outError("Packet::IsValidPacket(): NULL == mBufferPtr");
 		return false;
 	}
 	if (false == IsValidHeader())
 	{
-		sLog->outError("Packet::IsValidPacket(): false == IsValidHeader()");
+		sLog.outError("Packet::IsValidPacket(): false == IsValidHeader()");
 		return false;
 	}
 	if (GetUsedSize() < GetPacketLen())
 	{
-		sLog->outError("Packet::IsValidPacket(): GetUsedSize([%d]) < GetPacketLen([%d])", GetUsedSize(), GetPacketLen());
+		sLog.outError("Packet::IsValidPacket(): GetUsedSize([%d]) < GetPacketLen([%d])", GetUsedSize(), GetPacketLen());
 		return false;
 	}
 	return true;

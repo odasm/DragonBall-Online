@@ -9,6 +9,7 @@
 CharSocket::CharSocket(boost::asio::io_service &service, std::function<void(Socket *)> closeHandler)
 	: Socket(service, closeHandler)
 {
+	AccountID = -1;
 }
 void CharSocket::OnConnectionDone()
 {
@@ -16,6 +17,13 @@ void CharSocket::OnConnectionDone()
 
 	Write((char*)rawData, sizeof(rawData));
 	memset(&rawData, 0, sizeof(rawData));
+	sLog.outDebug("Client connected: [%s]", m_address);
+}
+void CharSocket::OnClosed()
+{
+	sLog.outDebug("Client disconnected: [%s]", m_address);
+	if (AccountID != -1)
+		sDB.UpdateAccountOnline(AccountID, false); // SET OUR USER OFFLINE IN DB
 }
 bool CharSocket::ProcessIncomingData()
 {
@@ -25,11 +33,11 @@ bool CharSocket::ProcessIncomingData()
 		Packet *pk = new Packet();
 		pk->AttachData((BYTE*)InPeak(), sizeInc);
 		PACKETDATA *header = (PACKETDATA*)InPeak();
-		sLog->outDebug("~~~~~~~ opcode %u ~~~~~~~ checksum %u", header->wOpCode, pk->GetPacketHeader()->byChecksum);
+		sLog.outDebug("Received opcode: [%u] from: [%s]", header->wOpCode, m_address);
 		/*
 		///		 DECRYPT PACKET HERE ????		\\\
 		*/
-		//sLog->outPacketDebugger(&packet);
+		//sLog.outPacketDebugger(&packet);
 		bool process = false;
 		if (header->wOpCode == 4)
 		{
@@ -50,8 +58,7 @@ bool CharSocket::ProcessIncomingData()
 		}
 		else
 		{
-			sLog->outError("Packet_[%u] Unknow", header->wOpCode);
-
+			sLog.outError("Packet_[%u] Unknow", header->wOpCode);
 			ReadSkip(sizeInc);
 			delete pk;
 			return false;

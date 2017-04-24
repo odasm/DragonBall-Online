@@ -74,7 +74,7 @@ int Decrypt(BYTE * pPlain, int nLength, DWORD dwCipherKey, BYTE * pbyCheckSum = 
 {
 	if (NULL == pPlain)
 	{
-		sLog->outError("Decrypt: pPlain is null");
+		sLog.outError("Decrypt: pPlain is null");
 		return 0;
 	}
 
@@ -162,14 +162,14 @@ int PacketEncoder::RxDecrypt(Packet& rPacket)
 	int dSize = Decrypt(rPacket.GetPacketData(), rPacket.GetPacketDataSize(), m_rxBodyKeyGenerator.Generate(), &byCheckSum);
 	if (pSize != dSize)
 	{
-		sLog->outError("RxDecrypt Error: [%u != %u]", pSize, dSize);
+		sLog.outError("RxDecrypt Error: [%u != %u]", pSize, dSize);
 		return 1;
 	}
 	// Checksum
-	//sLog->outString("Rx PacketLen[%u] Sequence[%u] Checksum[%u]\n", rPacket.GetPacketHeader()->wPacketLen, rPacket.GetPacketHeader()->bySequence, rPacket.GetPacketHeader()->byChecksum);
+	//sLog.outString("Rx PacketLen[%u] Sequence[%u] Checksum[%u]\n", rPacket.GetPacketHeader()->wPacketLen, rPacket.GetPacketHeader()->bySequence, rPacket.GetPacketHeader()->byChecksum);
 	if (byCheckSum != rPacket.GetPacketHeader()->byChecksum)
 	{
-		//sLog->outError("RxDecrypt Error: [%u != %u]", byCheckSum, rPacket.GetPacketHeader()->byChecksum);
+		//sLog.outError("RxDecrypt Error: [%u != %u]", byCheckSum, rPacket.GetPacketHeader()->byChecksum);
 		return 2;
 	}
 	return 0;
@@ -183,7 +183,7 @@ int PacketEncoder::TxEncrypt(Packet& rPacket)
 	int dSize = Encrypt(rPacket.GetPacketData(), rPacket.GetPacketDataSize(), m_txBodyKeyGenerator.Generate(), &byCheckSum);
 	if (pSize != dSize)
 	{
-		sLog->outString("TxEncrypt Error: [%u != %u]", pSize, dSize);
+		sLog.outString("TxEncrypt Error: [%u != %u]", pSize, dSize);
 		return 1;
 	}
 	// Checksum

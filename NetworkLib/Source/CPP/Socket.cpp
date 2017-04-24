@@ -23,7 +23,7 @@ bool Socket::Open()
 	}
 	catch (boost::system::error_code& error)
 	{
-		sLog->outError("Socket::Open() failed to get remote address.  Error: %s", error.message().c_str());
+		sLog.outError("Socket::Open() failed to get remote address.  Error: %s", error.message().c_str());
 		return false;
 	}
 
@@ -38,8 +38,8 @@ bool Socket::Open()
 
 void Socket::Close()
 {
+	OnClosed();
 	assert(!IsClosed());
-	sLog->outDebug("Client disconnected: [%s]", m_address);
 	boost::system::error_code ec;
 	m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
 	m_socket.close();
@@ -118,7 +118,7 @@ void Socket::OnError(const boost::system::error_code &error)
 {
 	if (error != boost::asio::error::eof &&
 		error != boost::asio::error::operation_aborted)
-		sLog->outError("Socket::OnError.  %s.  Connection closed.", error.message().c_str());
+		sLog.outError("Socket::OnError.  %s.  Connection closed.", error.message().c_str());
 
 	if (!IsClosed())
 		Close();
@@ -228,5 +228,4 @@ void Socket::OnWriteComplete(const boost::system::error_code &error, size_t leng
 			[this](const boost::system::error_code &error, size_t length) { this->OnWriteComplete(error, length); });
 	else
 		m_writeState = WriteState::Idle;
-	//sLog->outDetail("Socket: data sended: [%d]", length);
 }

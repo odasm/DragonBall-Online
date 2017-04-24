@@ -100,24 +100,70 @@ void MySQLConnWrapper::prepare(const string& query)
 	{
 		m_mutex.unlock();
 		manageException(e);
+		return;
 	}
 	m_mutex.unlock();
 }
-
+void MySQLConnWrapper::setDouble(const int& num, const double& data)
+{
+	try
+	{
+		m_mutex.lock();
+		prep_stmt->setDouble(num, data);
+	}
+	catch (sql::SQLException &e)
+	{
+		m_mutex.unlock();
+		manageException(e);
+		return;
+	}
+	m_mutex.unlock();
+}
 void MySQLConnWrapper::setInt(const int& num, const int& data)
 {
-	m_mutex.lock();
-	prep_stmt->setInt(num, data);
+	try
+	{
+		m_mutex.lock();
+		prep_stmt->setInt(num, data);
+	}
+	catch (sql::SQLException &e)
+	{
+		m_mutex.unlock();
+		manageException(e);
+		return;
+	}
 	m_mutex.unlock();
 }
-
+void MySQLConnWrapper::setBoolean(const int& num, const bool& data)
+{
+	try
+	{
+		m_mutex.lock();
+		prep_stmt->setBoolean(num, data);
+	}
+	catch (sql::SQLException &e)
+	{
+		m_mutex.unlock();
+		manageException(e);
+		return;
+	}
+	m_mutex.unlock();
+}
 void MySQLConnWrapper::setString(const int& num, const string& data)
 {
-	m_mutex.lock();
-	prep_stmt->setString(num, data);
+	try
+	{
+		m_mutex.lock();
+		prep_stmt->setString(num, data);
+	}
+	catch (sql::SQLException &e)
+	{
+		m_mutex.unlock();
+		manageException(e);
+		return;
+	}
 	m_mutex.unlock();
 }
-
 void MySQLConnWrapper::execute(const string& query)
 {
 	try 
@@ -152,37 +198,78 @@ bool MySQLConnWrapper::fetch()
 	m_mutex.unlock();
 	return value;
 }
-
 long double MySQLConnWrapper::getDouble(const char* index)
 {
-	m_mutex.lock();
-	double value = res->getDouble(index);
+	try
+	{
+		m_mutex.lock();
+		double value = res->getDouble(index);
+		m_mutex.unlock();
+		return value;
+	}
+	catch (sql::SQLException &e)
+	{
+		manageException(e);
+		m_mutex.unlock();
+		return -1;
+	}
 	m_mutex.unlock();
-	return value;
+	return -1;
 }
-
 bool MySQLConnWrapper::getBoolean(const char* index)
 {
-	m_mutex.lock();
-	bool value = res->getBoolean(index);
+	try
+	{
+		m_mutex.lock();
+		bool value = res->getBoolean(index);
+		m_mutex.unlock();
+		return value;
+	}
+	catch (sql::SQLException &e)
+	{
+		manageException(e);
+		m_mutex.unlock();
+		return false;
+	}
 	m_mutex.unlock();
-	return value;
+	return false;
 }
-
 int MySQLConnWrapper::getInt(const char* index)
 {
-	m_mutex.lock();
-	int value = res->getInt(index);
+	try
+	{
+		m_mutex.lock();
+		int value = res->getInt(index);
+		m_mutex.unlock();
+		return value;
+	}
+	catch (sql::SQLException &e)
+	{
+		manageException(e);
+		m_mutex.unlock();
+		return -1;
+	}
 	m_mutex.unlock();
-	return value;
+	return -1;
 }
 
 string MySQLConnWrapper::getString(const char* index)
 {
-	m_mutex.lock();
-	string value = res->getString(index);
+	try
+	{
+		m_mutex.lock();
+		string value = res->getString(index);
+		m_mutex.unlock();
+		return value;
+	}
+	catch (sql::SQLException &e)
+	{
+		manageException(e);
+		m_mutex.unlock();
+		return NULL;
+	}
 	m_mutex.unlock();
-	return value;
+	return NULL;
 }
 
 string MySQLConnWrapper::print(const string& field)

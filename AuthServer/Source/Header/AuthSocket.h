@@ -1,6 +1,7 @@
 #ifndef _AUTHSOCKET_H
 #define _AUTHSOCKET_H
 
+#include <SharedDef.h>
 #include <Socket.h>
 #include <boost/asio.hpp>
 #include <functional>
@@ -15,5 +16,6 @@ public:
 private:
 	virtual bool ProcessIncomingData() override;
 	virtual void OnConnectionDone() override;
+	virtual void OnClosed() override;
 };
 #endif

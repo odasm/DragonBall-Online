@@ -19,13 +19,13 @@ bool XmlParser::loadFile(char* _filename)
 	doc = xmlParseFile(ext.c_str());
 	if (doc == NULL)
 	{
-		sLog->outError("Document not parsed successfully : %s", _filename);
+		sLog.outError("Document not parsed successfully : %s", _filename);
 		return false;
 	}
 	cur = xmlDocGetRootElement(doc);
 	if (cur == NULL)
 	{
-		sLog->outError("Document root not valid : %s", _filename);
+		sLog.outError("Document root not valid : %s", _filename);
 		xmlFreeDoc(doc);
 		return false;
 	}
@@ -41,7 +41,7 @@ int XmlParser::GetInt(char* fieldname, char* valuename)
 		if (xmlStrcmp(cur->name, (const xmlChar*)filename.c_str()) != 0)
 		{
 			Free();
-			sLog->outError("Error on Loading Config xml File, Root node not found (%s)", filename);
+			sLog.outError("Error on Loading Config xml File, Root node not found (%s)", filename);
 			return NULL;
 		}
 		for (node = cur->children; node; node = node->next)
@@ -62,7 +62,7 @@ int XmlParser::GetInt(char* fieldname, char* valuename)
 	}
 	else
 	{
-		sLog->outError("Error on Loading Config xml File");
+		sLog.outError("Error on Loading Config xml File");
 		Free();
 		return -1;
 	}
@@ -77,7 +77,7 @@ char* XmlParser::GetStr(char* fieldname, char* valuename)
 		if (xmlStrcmp(cur->name, (const xmlChar*)filename.c_str()) != 0)
 		{
 			Free();
-			sLog->outError("Error on Loading Config xml File, Root node not found (%s)", filename);
+			sLog.outError("Error on Loading Config xml File, Root node not found (%s)", filename);
 			return NULL;
 		}
 		for (node = cur->children; node; node = node->next)
@@ -97,7 +97,7 @@ char* XmlParser::GetStr(char* fieldname, char* valuename)
 	}
 	else
 	{
-		sLog->outError("Error on Loading Config xml File");
+		sLog.outError("Error on Loading Config xml File");
 		Free();
 		return "";
 	}
@@ -111,7 +111,7 @@ char* XmlParser::GetChildStr(char* child, char* fieldname, char* valuename)
 		cur = xmlDocGetRootElement(doc);
 		if (xmlStrcmp(cur->name, (const xmlChar*)filename.c_str()) != 0) {
 			Free();
-			sLog->outError("Error on Loading Config xml File, Root node not found (%s)", filename);
+			sLog.outError("Error on Loading Config xml File, Root node not found (%s)", filename);
 		}
 
 		for (node = cur->children; node; node = node->next)
@@ -139,7 +139,7 @@ char* XmlParser::GetChildStr(char* child, char* fieldname, char* valuename)
 	}
 	else
 	{
-		sLog->outError("Error on Loading Config xml File");
+		sLog.outError("Error on Loading Config xml File");
 		Free();
 		return "";
 	}
@@ -153,7 +153,7 @@ int XmlParser::GetChildInt(char* child, char* fieldname, char* valuename)
 		cur = xmlDocGetRootElement(doc);
 		if (xmlStrcmp(cur->name, (const xmlChar*)filename.c_str()) != 0) {
 			Free();
-			sLog->outError("Error on Loading Config xml File, Root node not found (%s)", filename);
+			sLog.outError("Error on Loading Config xml File, Root node not found (%s)", filename);
 		}
 
 		for (node = cur->children; node; node = node->next)
@@ -180,7 +180,7 @@ int XmlParser::GetChildInt(char* child, char* fieldname, char* valuename)
 	}
 	else
 	{
-		sLog->outError("Error on Loading Config xml File");
+		sLog.outError("Error on Loading Config xml File");
 		Free();
 		return -1;
 	}

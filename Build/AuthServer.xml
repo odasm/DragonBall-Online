@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AuthServer>
+  <!-- Log Configuration -->
+  <!-- 0 MINIMAL  1 BASIC  2 DETAIL  3 DEBUG -->
+  <LogLevel Value="0"/>
   <!-- Server Configuration -->
   <Server IP="127.0.0.1" Port="50200" />
   <MySQL Host="tcp://127.0.0.1:3306" Database="dragonball" User="root" Password="" />

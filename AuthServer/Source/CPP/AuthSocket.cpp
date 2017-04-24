@@ -9,10 +9,10 @@
 #include <XmlParser.h>
 #include <string>
 
-struct UA_LOGIN_REQ
+struct sUA_LOGIN_REQ
 {
-	WCHAR		awchUserId[16 + 1];
-	WCHAR		awchPasswd[16 + 1];
+	WCHAR		awchUserId[MAX_SIZE_USERID_UNICODE + 1];
+	WCHAR		awchPasswd[MAX_SIZE_USERPW_UNICODE + 1];
 	DWORD		dwCodePage;
 	WORD		wLVersion;
 	WORD		wRVersion;
@@ -23,43 +23,46 @@ AuthSocket::AuthSocket(boost::asio::io_service &service, std::function<void(Sock
 	: Socket(service, closeHandler)
 {
 }
+void AuthSocket::OnClosed()
+{
+	sLog.outDebug("Client disconnected: [%s]", m_address);
+}
 void AuthSocket::OnConnectionDone()
 {
 	uint8 rawData[] = { 0x06, 0x00, 0x03, 0x00, 0x30, 0x2C, 0x67, 0x4C };
 
 	Write((char*)rawData, sizeof(rawData));
 	memset(&rawData, 0, sizeof(rawData));
+	sLog.outDebug("Client connected: [%s]", m_address);
 }
 bool AuthSocket::_ProcessLoginPacket(Packet& packet)
 {
 	if (packet.GetPacketHeader()->bySequence == Opcodes::UA_LOGIN_TW_REQ) // Get the login request data
 	{
 		bool val = _HandleOnLogin(packet);
-
 		return val;
 	}
 	else if (packet.GetPacketHeader()->bySequence == Opcodes::UA_LOGIN_DISCONNECT_REQ)
 	{
 		sAU_LOGIN_DISCONNECT_RES res;
 		memset(&res, 0, sizeof(sAU_LOGIN_DISCONNECT_RES));
-
 		res.wPacketSize = 2;
 		res.bEncrypt = 0;
 		res.wOpCode = Opcodes::AU_LOGIN_DISCONNECT_RES;
 		//res.byChecksum = 3;
-
 		Write((char*)&res, sizeof(sAU_LOGIN_DISCONNECT_RES));
 		res = {};
 		return true;
 	}
+	return false;
 }
 bool AuthSocket::_HandleOnLogin(Packet& packet)
 {
-	UA_LOGIN_REQ *req = (UA_LOGIN_REQ*)packet.GetPacketData();
-	char username[16];
-	char password[16];
-	wcstombs(username, req->awchUserId, 16);
-	wcstombs(password, req->awchPasswd, 16);
+	sUA_LOGIN_REQ *req = (sUA_LOGIN_REQ*)packet.GetPacketData();
+	char username[MAX_SIZE_USERID_UNICODE + 1];
+	char password[MAX_SIZE_USERPW_UNICODE + 1];
+	wcstombs(username, req->awchUserId, MAX_SIZE_USERID_UNICODE + 1);
+	wcstombs(password, req->awchPasswd, MAX_SIZE_USERPW_UNICODE + 1);
 
 	sAU_COMMERCIAL_SETTING_NFY commercial;
 	memset(&commercial, 0, sizeof(sAU_COMMERCIAL_SETTING_NFY));
@@ -80,13 +83,15 @@ bool AuthSocket::_HandleOnLogin(Packet& packet)
 	res.wOpCode = Opcodes::AU_LOGIN_RES;
 	//res.byChecksum = 3;
 
-	int AccountID = sDB->GetAccountID(username, password);
-	res.wResultCode = sDB->ValidateLoginRequest(username, password, AccountID);
-	memcpy(res.awchUserId, req->awchUserId, 16);
-	memcpy(res.abyAuthKey, "SE@WASDE#$RFWD@D", 16);
+	int AccountID = sDB.GetAccountID(username, password);
+	res.wResultCode = sDB.ValidateLoginRequest(username, password, AccountID);
+	if (res.wResultCode == AUTH_SUCCESS)
+		sDB.UpdateAccountOnline(AccountID, true); // SET OUR USER ONLINE IN DB
+	memcpy(res.awchUserId, req->awchUserId, MAX_SIZE_USERID_UNICODE + 1);
+	memcpy(res.abyAuthKey, "SE@WASDE#$RFWD@D", MAX_SIZE_AUTH_KEY);
 	res.AccountID = AccountID;
 	res.lastChannelID = 255;
-	res.lastServerID = sDB->GetLastServerID(AccountID);
+	res.lastServerID = sDB.GetLastServerID(AccountID);
 	res.dev = 65535;
 	res.byServerInfoCount = sXmlParser->GetInt("CharServerList", "Count");
 	int i = 0;
@@ -117,12 +122,11 @@ bool AuthSocket::ProcessIncomingData()
 		Packet *pk = new Packet();
 		pk->AttachData((BYTE*)InPeak(), sizeInc);
 		PACKETDATA *header = (PACKETDATA*)InPeak();
-		sLog->outDebug("~~~~~~~ opcode %u ~~~~~~~ checksum %u", header->wOpCode, pk->GetPacketHeader()->byChecksum);
 
 		/*
 			///		 DECRYPT PACKET HERE ????		\\\
 		*/
-
+		sLog.outDebug("Received opcode: [%u] from: [%s]", header->wOpCode, m_address);
 		bool process = false;
 		if (header->wOpCode == 4)
 		{
@@ -144,8 +148,7 @@ bool AuthSocket::ProcessIncomingData()
 		}
 		else
 		{
-			sLog->outError("Packet_[%u] Unknow", header->wOpCode);
-
+			sLog.outError("Packet_[%u] Unknow", header->wOpCode);
 			ReadSkip(sizeInc);
 			delete pk;
 			return false;

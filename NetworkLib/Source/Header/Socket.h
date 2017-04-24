@@ -6,7 +6,6 @@
 #include <mutex>
 #include <functional>
 
-#include <Define.h>
 #include <asio.hpp>
 #include <PacketBuffer.h>
 
@@ -57,6 +56,7 @@ protected:
 
 	virtual bool ProcessIncomingData() = 0;
 	virtual void OnConnectionDone() = 0;
+	virtual void OnClosed() = 0;
 
 	const uint8 *InPeak() const { return &m_inBuffer->m_buffer[m_inBuffer->m_readPosition]; }
 
