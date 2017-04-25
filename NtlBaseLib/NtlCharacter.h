@@ -940,8 +940,16 @@ struct sPC_SUMMARY
 	sMARKING		sMarking;
 	bool			bNeedNameChange;
 	sDBO_DOGI_DATA	sDogi;
-	WORD			wUnknow1; // 0x0000
-	BYTE			abyUnknow2[6];
+	BYTE			abyUnknow;
+	BYTE			abyUnknow1;
+	BYTE			abyUnknow2;
+	BYTE			abyUnknow3;
+	BYTE			abyUnknow4;
+	BYTE			abyUnknow5;
+	BYTE			abyUnknow6;
+	BYTE			abyUnknow7;
+	//WORD			wUnknow1; // 0x0000
+	//BYTE			abyUnknow2[6];
 };
 
 struct sPC_BRIEF

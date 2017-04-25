@@ -66,6 +66,9 @@ public:
 	ResultCodes checkUsedName(char* Name);
 	void UpdateAccountOnline(int AccountID, bool isLogging);
 	ResultCodes DeleteCharacter(int accId, int charId);
+	void VerifyCharacterToDelete(int accid);
+	ResultCodes CancelDeleteCharacterPending(CHARACTERID charid);
+	int GetAmountOfCharacter(int accid, int servid);
 private:
 	string host;
 	string user;

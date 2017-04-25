@@ -103,6 +103,9 @@ void CharSocket::SendCharacterList()
 
 	cinfo.bEncrypt = 0;
 	cinfo.wPacketSize = sizeof(sCU_CHARACTER_INFO) - 2;
+
+	sDB.VerifyCharacterToDelete(AccountID);
+
 	sDB.GetDBAccCharListData(&cinfo, AccountID, ServerID);
 	cinfo.wOpCode = CU_CHARACTER_INFO;
 
@@ -131,7 +134,28 @@ void CharSocket::SendCharacterList()
 		cinfo.sPcData[i].worldId = sDB.getInt("WorldID");
 		cinfo.sPcData[i].worldTblidx = sDB.getInt("WorldTableID");
 		cinfo.sPcData[i].dwMapInfoIndex = sDB.getInt("MapInfoID");
-		cinfo.asDelData[i].charId = INVALID_CHARACTERID;
+
+		std::string deletedAt = sDB.getString("deletionStartedAt");
+		if (deletedAt != "" && deletedAt != "NULL")
+		{
+			boost::posix_time::ptime t(boost::posix_time::time_from_string(deletedAt));
+			tm pt_tm = to_tm(t); // cast struct to time_t
+			if (t.is_not_a_date_time() == false)
+			{
+				time_t deletedAtDate = mktime(&pt_tm);
+				time_t timeNow;
+				time(&timeNow);
+				long long diff = 3600000 - ((timeNow - deletedAtDate) * 1000); // get time left before delete the character
+				std::cout << diff << std::endl;
+				cinfo.asDelData[i].charId = cinfo.sPcData[i].charId;
+				if (diff <= 0)
+					cinfo.asDelData[i].dwPastTick = 0;
+				else
+					cinfo.asDelData[i].dwPastTick = diff;
+			}
+		}
+		else
+			cinfo.asDelData[i].charId = INVALID_CHARACTERID;
 		sLog.outDebug("Getting information for characters: %d", cinfo.sPcData[i].charId);
 	}
 	for (int i = 0; i < cinfo.byCount; i++)
@@ -168,6 +192,8 @@ bool CharSocket::GetCharacterLoad(Packet &packet)
 	cninfo.bEncrypt = 0;
 	cninfo.wPacketSize = sizeof(sCU_SERVER_CHANNEL_INFO) - 2;
 	cninfo.wOpCode = CU_SERVER_CHANNEL_INFO;
+
+	ServerID = req->serverFarmId; // store the new serverID to get only the data related to it.
 
 	char snode[20];
 	sprintf_s(snode, "Server%d", req->serverFarmId + 1);
@@ -207,7 +233,10 @@ bool CharSocket::GetCreateCharactersRequest(Packet &packet)
 	memset(&res, 0, sizeof(res));
 
 	wcstombs(username, data->awchCharName, MAX_SIZE_USERID_UNICODE + 1);
-	res.wResultCode = sDB.checkUsedName(username);
+	if (sDB.GetAmountOfCharacter(AccountID, ServerID) < 4) // ATM ONLY 4 CHARACTER CAN BE CREATE
+		res.wResultCode = sDB.checkUsedName(username);
+	else
+		res.wResultCode = CHARACTER_COUNT_OVER;
 	res.bEncrypt = 0;
 	res.wOpCode = CU_CHARACTER_ADD_RES;
 	res.wPacketSize = sizeof(sCU_CHARACTER_ADD_RES) - 2;
@@ -243,11 +272,11 @@ bool CharSocket::GetCreateCharactersRequest(Packet &packet)
 		res.sPcDataSummary.fPositionY = 0;
 		res.sPcDataSummary.fPositionZ = 0;
 
-		res.sPcDataSummary.wUnknow1 = 65535;
-		for (int x = 0; x < 6; x++)
-		{
-			res.sPcDataSummary.abyUnknow2[x] = 255;
-		}
+		//res.sPcDataSummary.wUnknow1 = 65535;
+		//for (int x = 0; x < 6; x++)
+		//{
+			//res.sPcDataSummary.abyUnknow2[x] = 255;
+		//}
 
 		res.sPcDataSummary.charId = AddCharacters(res.sPcDataSummary);
 		if (res.sPcDataSummary.charId == -1)
@@ -290,18 +319,22 @@ bool CharSocket::GetCharactersDeleteRequest(Packet &packet)
 	res.wPacketSize = sizeof(sCU_CHARACTER_DEL_RES) - 2;
 	
 	res.charId = req->charId;
-	res.wResultCode = sDB.DeleteCharacter(AccountID, req->charId);
+
+	time_t rawtime;
+	struct tm * timeinfo = new struct tm;
+	char buffer[80];
+	time(&rawtime);
+	localtime_s(timeinfo, &rawtime);
+	strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+
+	sDB.prepare("UPDATE characters SET `deletionStartedAt` = ? WHERE `CharacterID` = ? LIMIT 1;");
+	sDB.setString(1, buffer);
+	sDB.setInt(2, req->charId);
+	sDB.execute();
+	res.wResultCode = CHARACTER_SUCCESS;
 
 	Write((char*)&res, sizeof(sCU_CHARACTER_DEL_RES));
-	
-	/*sCU_CHARACTER_DEL_NFY nfy; // notify to reload the GUI
-
-	nfy.bEncrypt = 0;
-	nfy.charId = req->charId;
-	nfy.wOpCode = CU_CHARACTER_DEL_NFY;
-	nfy.wPacketSize = sizeof(sCU_CHARACTER_DEL_NFY) - 2;
-
-	Write((char*)&nfy, sizeof(sCU_CHARACTER_DEL_NFY));*/
+	delete timeinfo;
 	return true;
 }
 bool CharSocket::SendCharacterExit(Packet &packet)
@@ -315,6 +348,67 @@ bool CharSocket::SendCharacterExit(Packet &packet)
 	res.wResultCode = GAME_SUCCESS;
 
 	Write((char*)&res, sizeof(sCU_CHARACTER_EXIT_RES));
+
+	return true;
+}
+bool CharSocket::SendCancelCharacterDeleteRequest(Packet &packet)
+{
+	sUC_CHARACTER_DEL_CANCEL_REQ *req = (sUC_CHARACTER_DEL_CANCEL_REQ*)packet.GetPacketData();
+	sCU_CHARACTER_DEL_CANCEL_RES res;
+	memset(&res, 0, sizeof(sCU_CHARACTER_DEL_CANCEL_RES));
+
+	res.bEncrypt = 0;
+	res.wOpCode = CU_CHARACTER_DEL_CANCEL_RES;
+	res.wPacketSize = sizeof(sCU_CHARACTER_DEL_CANCEL_RES) - 2;
+	res.wResultCode = sDB.CancelDeleteCharacterPending(req->charId);
+	res.charId = req->charId;
+	Write((char*)&res, sizeof(sCU_CHARACTER_DEL_CANCEL_RES));
+	return true;
+}
+bool CharSocket::SendCharSelect(Packet &packet)
+{
+	sUC_CHARACTER_SELECT_REQ * req = (sUC_CHARACTER_SELECT_REQ*)packet.GetPacketData();
+	sCU_CHARACTER_SELECT_RES res;
+
+	res.bEncrypt = 0;
+	res.wOpCode = CU_CHARACTER_SELECT_RES;
+	res.wPacketSize = sizeof(sCU_CHARACTER_SELECT_RES) - 2;
+
+	char channelSelected[20];
+	char serverSelected[20];
+	sprintf_s(serverSelected, "Server%u", ServerID + 1);
+	sprintf_s(channelSelected, "Channel%u", req->byServerChannelIndex + 1);
+	memcpy(res.szGameServerIP, sXmlParser->GetChildStr(serverSelected, channelSelected, "IP"), MAX_LENGTH_OF_IP);
+	res.wGameServerPortForClient = sXmlParser->GetChildInt(serverSelected, channelSelected, "Port");
+	res.charId = req->charId;
+	res.wResultCode = CHARACTER_SUCCESS;
+	strcpy_s((char*)res.abyAuthKey, MAX_SIZE_AUTH_KEY, "Dbo");
+
+	Write((char*)&res, sizeof(sCU_CHARACTER_SELECT_RES));
+
+	return true;
+}
+bool CharSocket::SendConnectWaitCheck(Packet& packet)
+{
+	sCU_CONNECT_WAIT_CHECK_RES res;
+
+	res.bEncrypt = 0;
+	res.wPacketSize = sizeof(sCU_CONNECT_WAIT_CHECK_RES) - 2;
+	res.wOpCode = CU_CONNECT_WAIT_CHECK_RES;
+	res.wResultCode = GAME_SUCCESS;
+	
+	Write((char*)&res, sizeof(sCU_CONNECT_WAIT_CHECK_RES));
+	
+	sCU_CONNECT_WAIT_COUNT_NFY res2;
+
+	res2.bEncrypt = 0;
+	res2.wPacketSize = sizeof(sCU_CONNECT_WAIT_COUNT_NFY) - 2;
+	res2.wOpCode = CU_CONNECT_WAIT_COUNT_NFY;
+	res2.dwCountWaiting = 0; /// How many players are in queue?
+
+	Write((char*)&res2, sizeof(sCU_CONNECT_WAIT_COUNT_NFY));
+
+	return true;
 }
 bool CharSocket::_ProcessCharPacket(Packet& packet, WORD wOpCode)
 {
@@ -348,12 +442,12 @@ bool CharSocket::_ProcessCharPacket(Packet& packet, WORD wOpCode)
 		case UC_CHARACTER_SELECT_REQ:
 		{
 			sLog.outDebug("~~~~~~~~~ UC_CHARACTER_SELECT_REQ ~~~~~~~~~");
-			break;
+			return SendCharSelect(packet);
 		}
 		case UC_CHARACTER_EXIT_REQ:
 		{
 			sLog.outDebug("~~~~~~~~~ UC_CHARACTER_EXIT_REQ ~~~~~~~~~");
-			break;
+			return SendCharacterExit(packet);
 		}
 		case UC_CHARACTER_LOAD_REQ:
 		{
@@ -363,12 +457,12 @@ bool CharSocket::_ProcessCharPacket(Packet& packet, WORD wOpCode)
 		case UC_CHARACTER_DEL_CANCEL_REQ:
 		{
 			sLog.outDebug("~~~~~~~~~ UC_CHARACTER_DEL_CANCEL_REQ ~~~~~~~~~");
-			break;
+			return SendCancelCharacterDeleteRequest(packet);
 		}
 		case UC_CONNECT_WAIT_CHECK_REQ:
 		{
 			sLog.outDebug("~~~~~~~~~ UC_CONNECT_WAIT_CHECK_REQ ~~~~~~~~~");
-			break;
+			return SendConnectWaitCheck(packet);
 		}
 		case UC_CONNECT_WAIT_CANCEL_REQ:
 		{
@@ -464,11 +558,6 @@ int CharSocket::AddCharacters(sPC_SUMMARY data)
 		}
 		else if (data.byClass == PC_CLASS_HUMAN_MYSTIC)
 		{
-			sDB.prepare("INSERT INTO skills (`skill_id`, `owner_id`, `RpBonusAuto`, `RpBonusType`, `SlotID`, `TimeRemaining`, `Exp`) VALUES ('10111',?,?,'0','1','0','0');");
-			sDB.setInt(1, charid);
-			sDB.setBoolean(2, 0);
-			sDB.execute();
-
 			sDB.prepare("INSERT INTO items (`owner_id`, `tblidx`, `place`, `pos`, `count`, `rank`, `durability`)"
 				"VALUES (?,  '500001', '7', '0', '1', '1', '100'), "
 				"(?,  '523001', '7', '2', '1', '1', '100'), "
@@ -491,23 +580,83 @@ int CharSocket::AddCharacters(sPC_SUMMARY data)
 	{
 		if (data.byClass == PC_CLASS_NAMEK_FIGHTER)
 		{
+			sDB.prepare("INSERT INTO skills (`skill_id`, `owner_id`, `RpBonusAuto`, `RpBonusType`, `SlotID`, `TimeRemaining`, `Exp`) VALUES ('310111',?,?,'0','1','0','0');");
+			sDB.setInt(1, charid);
+			sDB.setBoolean(2, 0);
+			sDB.execute();
 
+			sDB.prepare("INSERT INTO items (`owner_id`, `tblidx`, `place`, `pos`, `count`, `rank`, `durability`)"
+				"VALUES (?,  '500001', '7', '0', '1', '1', '100'), "
+				"(?,  '525001', '7', '2', '1', '1', '100'), "
+				"(?,  '525002', '7', '3', '1', '1', '100'), "
+				"(?,  '525003', '7', '4', '1', '1', '100');");
+			sDB.setInt(1, charid);
+			sDB.setInt(2, charid);
+			sDB.setInt(3, charid);
+			sDB.setInt(4, charid);
+			sDB.execute();
 		}
 		else if (data.byClass == PC_CLASS_NAMEK_MYSTIC)
 		{
-
+			sDB.prepare("INSERT INTO items (`owner_id`, `tblidx`, `place`, `pos`, `count`, `rank`, `durability`)"
+				"VALUES (?,  '506001', '7', '0', '1', '1', '100'), "
+				"(?,  '526001', '7', '2', '1', '1', '100'), "
+				"(?,  '526002', '7', '3', '1', '1', '100'), "
+				"(?,  '526003', '7', '4', '1', '1', '100');");
+			sDB.setInt(1, charid);
+			sDB.setInt(2, charid);
+			sDB.setInt(3, charid);
+			sDB.setInt(4, charid);
+			sDB.execute();
+			sDB.prepare("INSERT INTO skills (`skill_id`, `owner_id`, `SlotID`, `TimeRemaining`) VALUES('410111',?,'1','0');");
+			sDB.setInt(1, charid);
+			sDB.execute();
 		}
+		sDB.prepare("UPDATE characters SET `Position_X` = '3131.0', `Position_Y` = '-32.0', `Position_Z` = '2755.0' WHERE `CharacterID` = ? LIMIT 1;");
+		sDB.setInt(1, charid);
+		sDB.execute();
 	}
 	else if (RACE_MAJIN == data.byRace)
 	{
 		if (data.byClass == PC_CLASS_MIGHTY_MAJIN)
 		{
+			sDB.prepare("INSERT INTO skills (`skill_id`, `owner_id`, `RpBonusAuto`, `RpBonusType`, `SlotID`, `TimeRemaining`, `Exp`) VALUES ('510111',?,?,'0','1','0','0');");
+			sDB.setInt(1, charid);
+			sDB.setBoolean(2, 0);
+			sDB.execute();
 
+			sDB.prepare("INSERT INTO items (`owner_id`, `tblidx`, `place`, `pos`, `count`, `rank`, `durability`)"
+				"VALUES (?,  '500001', '7', '0', '1', '1', '100'), "
+				"(?,  '527001', '7', '2', '1', '1', '100'), "
+				"(?,  '527002', '7', '3', '1', '1', '100'), "
+				"(?,  '527003', '7', '4', '1', '1', '100');");
+			sDB.setInt(1, charid);
+			sDB.setInt(2, charid);
+			sDB.setInt(3, charid);
+			sDB.setInt(4, charid);
+			sDB.execute();
 		}
 		else if (data.byClass == PC_CLASS_WONDER_MAJIN)
 		{
+			sDB.prepare("INSERT INTO skills (`skill_id`, `owner_id`, `RpBonusAuto`, `RpBonusType`, `SlotID`, `TimeRemaining`, `Exp`) VALUES ('610111',?,?,'0','1','0','0');");
+			sDB.setInt(1, charid);
+			sDB.setBoolean(2, 0);
+			sDB.execute();
 
+			sDB.prepare("INSERT INTO items (`owner_id`, `tblidx`, `place`, `pos`, `count`, `rank`, `durability`)"
+				"VALUES (?,  '500001', '7', '0', '1', '1', '100'), "
+				"(?,  '527001', '7', '2', '1', '1', '100'), "
+				"(?,  '527002', '7', '3', '1', '1', '100'), "
+				"(?,  '527003', '7', '4', '1', '1', '100');");
+			sDB.setInt(1, charid);
+			sDB.setInt(2, charid);
+			sDB.setInt(3, charid);
+			sDB.setInt(4, charid);
+			sDB.execute();
 		}
+		sDB.prepare("UPDATE characters SET `Position_X` = '5775.0', `Position_Y` = '-74.0', `Position_Z` = '4032.0' WHERE `CharacterID` = ? LIMIT 1;");
+		sDB.setInt(1, charid);
+		sDB.execute();
 	}
 	else
 	{

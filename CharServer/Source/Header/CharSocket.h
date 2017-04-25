@@ -3,6 +3,7 @@
 
 #include <Socket.h>
 #include <boost/asio.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <functional>
 #include <Packet.h>
 #include <TableAll.h>
@@ -21,6 +22,9 @@ public:
 	bool GetCharactersDeleteRequest(Packet &packet);
 	void SendCharacterList();
 	bool SendCharacterExit(Packet &packet);
+	bool SendCancelCharacterDeleteRequest(Packet &packet);
+	bool SendCharSelect(Packet &packet);
+	bool SendConnectWaitCheck(Packet& packet);
 private:
 	virtual bool ProcessIncomingData() override;
 	virtual void OnConnectionDone() override;

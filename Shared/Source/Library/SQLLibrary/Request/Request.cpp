@@ -1,6 +1,8 @@
 #include <mysqlconn_wrapper.h>
 #include <Logger.h>
 #include "../../../NetworkLib/Source/Header/Packet/Char/PacketCU.h"
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <list>
 
 void MySQLConnWrapper::UpdateAccountOnline(int AccountID, bool isLogging)
 {
@@ -158,6 +160,82 @@ ResultCodes MySQLConnWrapper::DeleteCharacter(int accId, int charId)
 		sLog.outError("Error while removing character items, Account: %d, CharacterID: %d", accId, charId);
 		return ResultCodes::CHARACTER_DELETE_CHAR_FAIL;
 	}
-	sLog.outDebug("Character have been deleted: Account: %d, CharacterID: %d", accId, charId);
+	sLog.outDetail("Character have been deleted: Account: %d, CharacterID: %d", accId, charId);
 	return ResultCodes::CHARACTER_SUCCESS;
+}
+void MySQLConnWrapper::VerifyCharacterToDelete(int accid)
+{
+	std::list<int> characterToDelete;
+	time_t startedAt;
+	time(&startedAt);
+	prepare("SELECT * FROM `characters` WHERE `AccountID` = ?");
+	setInt(1, accid);
+	execute();
+	while (fetch())
+	{
+		std::string deletedAt = getString("deletionStartedAt");
+		if (deletedAt != "" && deletedAt != "NULL")
+		{
+			boost::posix_time::ptime t(boost::posix_time::time_from_string(deletedAt));
+			tm pt_tm = to_tm(t); // cast struct to time_t
+			if (t.is_not_a_date_time() == false)
+			{
+				time_t deletedAtDate = mktime(&pt_tm);
+				time_t timeNow;
+				time(&timeNow);
+				double diff = difftime(timeNow, deletedAtDate) / 60 / 60; // in hour
+
+				if (diff >= 1) // more than a hour past so delete the character
+				{
+					characterToDelete.push_back(getInt("CharacterID"));
+				}
+			}
+		}
+	}
+	for (std::list<int>::iterator it = characterToDelete.begin(); it != characterToDelete.end(); ++it)
+	{
+		DeleteCharacter(accid, *it);
+	}
+}
+ResultCodes MySQLConnWrapper::CancelDeleteCharacterPending(CHARACTERID charid)
+{
+	prepare("SELECT * FROM `characters` WHERE `CharacterID` = ?;");
+	setInt(1, charid);
+	execute();
+	if (fetch())
+	{
+		std::string deletedAt = getString("deletionStartedAt");
+		if (deletedAt != "" && deletedAt != "NULL")
+		{
+			boost::posix_time::ptime t(boost::posix_time::time_from_string(deletedAt));
+			tm pt_tm = to_tm(t); // cast struct to time_t
+			if (t.is_not_a_date_time() == false)
+			{
+				time_t deletedAtDate = mktime(&pt_tm);
+				time_t timeNow;
+				time(&timeNow);
+				double diff = difftime(timeNow, deletedAtDate) / 60 / 60; // in hour
+
+				if (diff < 1) // less than a hour past so cancel the deletion
+				{
+					prepare("UPDATE `characters` SET `deletionStartedAt` = ? WHERE `CharacterID` = ? LIMIT 1;");
+					setString(1, "NULL");
+					setInt(2, charid);
+					execute();
+					sLog.outDetail("Character have been restored: CharacterID: %d", charid);
+					return ResultCodes::CHARACTER_SUCCESS;
+				}
+			}
+			return ResultCodes::CHARACTER_FAIL;
+		}
+	}
+	return ResultCodes::CHARACTER_DB_QUERY_FAIL;
+}
+int MySQLConnWrapper::GetAmountOfCharacter(int accid, int servid)
+{
+	prepare("SELECT * FROM `characters` WHERE `AccountID`= ? AND `ServerID`= ? LIMIT 8;");
+	setInt(1, accid);
+	setInt(2, servid);
+	execute();
+	return rowsCount();
 }

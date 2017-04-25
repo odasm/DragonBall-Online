@@ -142,6 +142,7 @@ struct sDBO_TIME
 	unsigned char   hour;
 	unsigned char   minute;
 	unsigned char   second;
+	// DATABASE FORMAT! : 2017-04-25 15:11:36
 };
 
 #endif // !__SHAREDDEF__H

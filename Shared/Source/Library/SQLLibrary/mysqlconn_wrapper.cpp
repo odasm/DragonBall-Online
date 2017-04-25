@@ -88,7 +88,6 @@ bool MySQLConnWrapper::switchDb(const string& db_name)
 	m_mutex.unlock();
 	return true;
 }
-
 void MySQLConnWrapper::prepare(const string& query)
 {
 	try

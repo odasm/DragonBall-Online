@@ -34,3 +34,35 @@ struct sUC_CHARACTER_DEL_REQ
 {
 	CHARACTERID		charId;
 };
+struct sUC_CHARACTER_DEL_CANCEL_REQ
+{
+	CHARACTERID		charId;
+	/* PACKET DEBBUGING */
+	/*
+	[0] : [64] // here character id 4octets
+	[1] : [0]
+	[2] : [0]
+	[3] : [0]
+	[4] : [113] // ?? 2 octets
+	[5] : [0]
+	[6] : [100] // ?? 2 octets
+	[7] : [0]
+	[8] : [113] // ?? 2 octets
+	[9] : [0]
+	[10] : [122] // ?? 2 octets
+	[11] : [0]
+	[12] : [100] // ?? 2 octets
+	[13] : [0]
+	[14] : [113] // ?? 2 octets
+	[15] : [0]
+	*/
+};
+struct sUC_CHARACTER_EXIT_REQ
+{
+	bool			bIsGameMove;
+};
+struct sUC_CHARACTER_SELECT_REQ
+{
+	CHARACTERID		charId;
+	BYTE		    byServerChannelIndex;
+};

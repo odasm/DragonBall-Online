@@ -25,6 +25,7 @@ void CharSocket::OnClosed()
 	if (AccountID != -1)
 		sDB.UpdateAccountOnline(AccountID, false); // SET OUR USER OFFLINE IN DB
 }
+
 bool CharSocket::ProcessIncomingData()
 {
 	while (ReadLengthRemaining() > 0)

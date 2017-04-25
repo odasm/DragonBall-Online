@@ -31,7 +31,7 @@ int main()
 		delete server;
 		return -1;
 	}
-
+	
 	while (!stopEvent)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));

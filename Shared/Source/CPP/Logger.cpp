@@ -30,14 +30,11 @@ void Log::outTime()
 	time_t rawtime;
 	struct tm * timeinfo = new struct tm;
 	char buffer[80];
-
 	time(&rawtime);
 	localtime_s(timeinfo, &rawtime);
-	strftime(buffer, sizeof(buffer), "%I:%M:%S", timeinfo);
+	strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%m:%S", timeinfo);
 	std::string str(buffer);
-
 	std::cout << white << "[" << str.c_str() << "] " << white;
-
 	delete timeinfo;
 }
 void Log::outString()

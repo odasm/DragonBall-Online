@@ -1,4 +1,4 @@
-#ifndef PACKETCU__H
+﻿#ifndef PACKETCU__H
 # define PACKETCU__H
 
 #include <Define.h>
@@ -104,6 +104,27 @@ END_PROTOCOL()
 //------------------------------------------------------------------
 BEGIN_PROTOCOL(CU_CHARACTER_EXIT_RES)
 WORD	wResultCode;
+END_PROTOCOL()
+//------------------------------------------------------------------
+BEGIN_PROTOCOL(CU_CHARACTER_DEL_CANCEL_RES)
+WORD			wResultCode;
+CHARACTERID		charId;
+END_PROTOCOL()
+//------------------------------------------------------------------
+BEGIN_PROTOCOL(CU_CHARACTER_SELECT_RES)
+WORD			wResultCode;
+CHARACTERID		charId;
+BYTE			abyAuthKey[MAX_SIZE_AUTH_KEY];
+char			szGameServerIP[MAX_LENGTH_OF_IP + 1];
+WORD			wGameServerPortForClient;
+END_PROTOCOL()
+//------------------------------------------------------------------
+BEGIN_PROTOCOL(CU_CONNECT_WAIT_CHECK_RES)
+WORD				wResultCode;
+END_PROTOCOL()
+//------------------------------------------------------------------
+BEGIN_PROTOCOL(CU_CONNECT_WAIT_COUNT_NFY)
+DWORD				dwCountWaiting;
 END_PROTOCOL()
 //------------------------------------------------------------------
 #pragma pack()
