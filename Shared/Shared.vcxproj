@@ -168,19 +168,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Header\ConsoleColor.h" />
+    <ClInclude Include="Source\Header\CreationPolicy.h" />
     <ClInclude Include="Source\Header\Define.h" />
     <ClInclude Include="Source\Header\Encryptation.h" />
     <ClInclude Include="Source\Header\Logger.h" />
+    <ClInclude Include="Source\Header\ObjectLifeTime.h" />
     <ClInclude Include="Source\Header\Opcodes.h" />
     <ClInclude Include="Source\Header\ResultCode.h" />
     <ClInclude Include="Source\Header\SharedDef.h" />
     <ClInclude Include="Source\Header\SharedType.h" />
+    <ClInclude Include="Source\Header\Singleton.h" />
+    <ClInclude Include="Source\Header\Threading.h" />
+    <ClInclude Include="Source\Header\ThreadingModel.h" />
     <ClInclude Include="Source\Header\XmlParser.h" />
     <ClInclude Include="Source\Library\SQLLibrary\mysqlconn_wrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CPP\Encryptation.cpp" />
     <ClCompile Include="Source\CPP\Logger.cpp" />
+    <ClCompile Include="Source\CPP\ObjectLifeTime.cpp" />
+    <ClCompile Include="Source\CPP\Threading.cpp" />
     <ClCompile Include="Source\CPP\XmlParser.cpp" />
     <ClCompile Include="Source\Library\SQLLibrary\mysqlconn_wrapper.cpp" />
     <ClCompile Include="Source\Library\SQLLibrary\Request\Request.cpp" />

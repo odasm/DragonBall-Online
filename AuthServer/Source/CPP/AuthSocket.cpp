@@ -93,7 +93,7 @@ bool AuthSocket::_HandleOnLogin(Packet& packet)
 	res.lastChannelID = 255;
 	res.lastServerID = sDB.GetLastServerID(AccountID);
 	res.dev = 65535;
-	res.byServerInfoCount = sXmlParser->GetInt("CharServerList", "Count");
+	res.byServerInfoCount = sXmlParser.GetInt("CharServerList", "Count");
 	int i = 0;
 	for (i = 0; i < res.byServerInfoCount; ++i)
 	{
@@ -101,8 +101,8 @@ bool AuthSocket::_HandleOnLogin(Packet& packet)
 		std::string fieldName = "CharServer";
 		fieldName.append(std::to_string(srv));
 
-		std::string addr = sXmlParser->GetChildStr("CharServerList", (char*)fieldName.c_str(), "IP");
-		int port = sXmlParser->GetChildInt("CharServerList", (char*)fieldName.c_str(), "Port");
+		std::string addr = sXmlParser.GetChildStr("CharServerList", (char*)fieldName.c_str(), "IP");
+		int port = sXmlParser.GetChildInt("CharServerList", (char*)fieldName.c_str(), "Port");
 
 		res.CharServerInfo[i].dwLoad = 0;
 		memcpy(res.CharServerInfo[i].szCharacterServerIP, addr.c_str(), strlen(addr.c_str()));

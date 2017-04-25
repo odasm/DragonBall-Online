@@ -1,11 +1,6 @@
 #include <XmlParser.h>
 #include <Logger.h>
 
-XmlParser XmlParser::singleton;
-
-XmlParser::XmlParser()
-{
-}
 void XmlParser::Free()
 {
 	if (doc != NULL)

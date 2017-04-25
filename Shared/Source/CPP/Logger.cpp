@@ -9,12 +9,6 @@
 #include <string>
 #include "../../../NetworkLib/Source/Header/Packet.h"
 
-Log Log::singleton;
-
-Log::Log()
-{
-	logLevel = LogLevel::LOG_LVL_MINIMAL;
-}
 void Log::SetLogLevel(int _level)
 {
 	int newLevel = _level;
@@ -80,7 +74,7 @@ void Log::outDetail(const char* str, ...)
 
 		va_list ap;
 		outTime();
-		std::cout << yellow << "[INFO]: " << white;
+		std::cout << yellow << "[DETAIL]: " << white;
 		va_start(ap, str);
 		vprintf(str, ap);
 		va_end(ap);

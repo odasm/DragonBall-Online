@@ -86,8 +86,6 @@
 #include "NtlStringHandler.h"
 #include "NtlBitFlagManager.h"
 
-TableContainer TableContainer::singleton;
-
 #define DBO_CREATE_TABLE(table_class_name, serializer, file_name_without_extension, table_pointer_variable, table_call_back)		\
 		{																											\
 		if (NULL != table_pointer_variable)																		\

@@ -3,6 +3,7 @@
 #include "Table.h"
 #include "NtlSharedType.h"
 #include <map>
+#include <Singleton.h>
 
 class FileSerializer;
 class CNtlBitFlagManager;
@@ -99,8 +100,6 @@ class HLSMerchantTable;
 
 class TableContainer
 {
-	static TableContainer singleton;
-	TableContainer();
 public:
 	enum eTABLE
 	{
@@ -199,12 +198,8 @@ public:
 
 		TABLE_COUNT
 	};
-	static TableContainer& get() noexcept
-	{
-		return singleton;
-	}
 	virtual ~TableContainer();
-
+	TableContainer();
 	class ICallBack
 	{
 	public:
@@ -434,4 +429,4 @@ protected:
 };
 
 // Table container singleton
-#define sTBM TableContainer::get()
+#define sTBM AKCore::Singleton<TableContainer>::Instance()

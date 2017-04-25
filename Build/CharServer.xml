@@ -2,14 +2,14 @@
 <CharServer>
   <!-- Log Configuration -->
   <!-- 0 MINIMAL  1 BASIC  2 DETAIL  3 DEBUG -->
-  <LogLevel Value="0"/>
+  <LogLevel Value="3"/>
   <!-- Server Configuration -->
   <Server IP="127.0.0.1" Port="50300" />
   <MySQL Host="tcp://127.0.0.1:3306" Database="dragonball" User="root" Password="" />
   <ServerCount value="2" />
 
   <!-- Game Data Tables Folder Location -->
-  <GameData Path="../Tables/" />
+  <GameData Path="../TWTables/" />
 
   <!-- Server List Configuration -->
   <Server1 Name="AKCore DEV" Count="1" MaxLoad="100" Private="1">

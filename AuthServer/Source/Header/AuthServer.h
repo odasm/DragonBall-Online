@@ -12,7 +12,6 @@ public:
 	bool ConnectToDatabase();
 	bool Start();
 private:
-	Listener<AuthSocket>	*network;
 	int port;
 	int worker;
 };

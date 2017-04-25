@@ -51,6 +51,21 @@
     <ClInclude Include="Source\Header\SharedType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Header\ObjectLifeTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Header\ThreadingModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Header\CreationPolicy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Header\Threading.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Header\Singleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CPP\Logger.cpp">
@@ -67,6 +82,12 @@
     </ClCompile>
     <ClCompile Include="Source\CPP\XmlParser.cpp">
       <Filter>Source Files\XmlParser</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CPP\ObjectLifeTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CPP\Threading.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

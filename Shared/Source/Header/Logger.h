@@ -6,6 +6,7 @@
 #include <mutex>
 #include <shared_mutex>
 #include <memory>
+#include <Singleton.h>
 
 #  define ATTR_PRINTF(F,V)
 class Packet;
@@ -19,8 +20,6 @@ enum LogLevel
 };
 class Log
 {
-	static Log singleton;
-	Log();
 public:
 	void outString();                                   // any log level
 	void outString(const char* str, ...)      ATTR_PRINTF(2, 3);
@@ -37,13 +36,9 @@ public:
 	void outPacketDebugger(Packet* paquet);
 	void outDebugToFile(BYTE* data, int size, WORD opcode);
 	void SetLogLevel(int _level);
-	static Log& get() noexcept 
-	{
-		return singleton;
-	}
 private:
 	LogLevel logLevel;
 };
 
 // Logger singleton
-#define sLog Log::get()
+#define sLog AKCore::Singleton<Log>::Instance()

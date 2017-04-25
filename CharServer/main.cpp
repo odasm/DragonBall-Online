@@ -23,12 +23,13 @@ int main()
 	std::cout << "\t    |____/|_|  \\__,_|\\__, |\\___/|_| |_|____/ \\__,_|_|_|" << std::endl;
 	std::cout << "\t                     |___/                             " << std::endl;
 	std::cout << yellow << "\t   	           AKCore 2017					\n\n" << white << std::endl;
+	sLog.outString("Using configuration file 'CharServer.xml'.");
+	sLog.outString("Using Boost: %s", BOOST_LIB_VERSION);
 
-	CharServer *server = new CharServer();
+	CharServer server;
 
-	if (server->Start() == false)
+	if (server.Start() == false)
 	{
-		delete server;
 		return -1;
 	}
 	
@@ -37,13 +38,11 @@ int main()
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 
-	delete server;
-	system("PAUSE");
+	sLog.outString("Halting process...");
 	return 0;
 }
 void signalHandler(int signum)
 {
 	sLog.outError("Interrupt signal (%d) received.", signum);
-	system("PAUSE");
 	stopEvent = true;
 }

@@ -40,18 +40,18 @@ bool CharSocket::GetCharacterServerList(Packet &packet, bool one)
 	sinfo.bEncrypt = 0;
 	sinfo.wPacketSize = sizeof(sCU_SERVER_FARM_INFO) - 2;
 	sinfo.wOpCode = CU_SERVER_FARM_INFO;
-	for (int i = 0; i < sXmlParser->GetInt("ServerCount", "value"); i++)
+	for (int i = 0; i < sXmlParser.GetInt("ServerCount", "value"); i++)
 	{
 		char snode[20];
 		sprintf_s(snode, "Server%d", i + 1);
 		sinfo.serverFarmInfo.serverFarmId = i;
 		
-		memcpy(sinfo.serverFarmInfo.wszGameServerFarmName, charToWChar(sXmlParser->GetStr(snode, "Name")), MAX_SIZE_SERVER_FARM_NAME_UNICODE);
+		memcpy(sinfo.serverFarmInfo.wszGameServerFarmName, charToWChar(sXmlParser.GetStr(snode, "Name")), MAX_SIZE_SERVER_FARM_NAME_UNICODE);
 		
 		sinfo.serverFarmInfo.dwLoad = 0;
 		sinfo.serverFarmInfo.dwMaxLoad = 100;
 
-		if (sXmlParser->GetInt(snode, "Private") == 1)
+		if (sXmlParser.GetInt(snode, "Private") == 1)
 		{
 			if (sDB.GetIsGameMaster(AccountID) != 1)
 			{
@@ -197,7 +197,7 @@ bool CharSocket::GetCharacterLoad(Packet &packet)
 
 	char snode[20];
 	sprintf_s(snode, "Server%d", req->serverFarmId + 1);
-	cninfo.byCount = sXmlParser->GetInt(snode, "Count");
+	cninfo.byCount = sXmlParser.GetInt(snode, "Count");
 	for (int i = 0; i < cninfo.byCount; ++i)
 	{
 		cninfo.serverChannelInfo[i].bIsVisible = true;
@@ -378,8 +378,8 @@ bool CharSocket::SendCharSelect(Packet &packet)
 	char serverSelected[20];
 	sprintf_s(serverSelected, "Server%u", ServerID + 1);
 	sprintf_s(channelSelected, "Channel%u", req->byServerChannelIndex + 1);
-	memcpy(res.szGameServerIP, sXmlParser->GetChildStr(serverSelected, channelSelected, "IP"), MAX_LENGTH_OF_IP);
-	res.wGameServerPortForClient = sXmlParser->GetChildInt(serverSelected, channelSelected, "Port");
+	memcpy(res.szGameServerIP, sXmlParser.GetChildStr(serverSelected, channelSelected, "IP"), MAX_LENGTH_OF_IP);
+	res.wGameServerPortForClient = sXmlParser.GetChildInt(serverSelected, channelSelected, "Port");
 	res.charId = req->charId;
 	res.wResultCode = CHARACTER_SUCCESS;
 	strcpy_s((char*)res.abyAuthKey, MAX_SIZE_AUTH_KEY, "Dbo");

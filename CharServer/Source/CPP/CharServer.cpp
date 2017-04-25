@@ -5,12 +5,9 @@
 
 CharServer::CharServer(int _port, int _workerThread) : port(_port), worker(_workerThread)
 {
-	network = NULL;
 }
 CharServer::~CharServer()
 {
-	if (network != nullptr)
-		delete network;
 }
 bool CharServer::loadDataTable()
 {
@@ -45,17 +42,29 @@ bool CharServer::loadDataTable()
 	fileNameList.SetFileName(TableContainer::TABLE_GAME_MANIA_TIME, "table_gamemaniatime_data");
 	fileNameList.SetFileName(TableContainer::TABLE_EXP, "table_exp_data");
 
-	std::string path = sXmlParser->GetStr("GameData", "Path");
-	return sTBM.Create(flagManager, (char*)path.c_str(), &fileNameList, eLOADING_METHOD::LOADING_METHOD_BINARY, GetACP(), NULL);
+	std::string path = sXmlParser.GetStr("GameData", "Path");
+	sTBM.Create(flagManager, (char*)path.c_str(), &fileNameList, eLOADING_METHOD::LOADING_METHOD_BINARY, GetACP(), NULL);
+
+	sNEWBIE_TBLDAT *newbi = (sNEWBIE_TBLDAT*)sTBM.GetNewbieTable()->GetNewbieTbldat(0, 0);
+	if (newbi == NULL)
+	{
+		sLog.outError("ERROR TABLE NULL");
+		return false;
+	}
+	else
+	{
+		sLog.outDetail("TABLE Loaded !");
+	}
+	return true;
 }
 bool CharServer::ConnectToDatabase()
 {
 	std::string user, password, host, db;
 
-	user = sXmlParser->GetStr("MySQL", "User");
-	password = sXmlParser->GetStr("MySQL", "Password");
-	host = sXmlParser->GetStr("MySQL", "Host");
-	db = sXmlParser->GetStr("MySQL", "Database");
+	user = sXmlParser.GetStr("MySQL", "User");
+	password = sXmlParser.GetStr("MySQL", "Password");
+	host = sXmlParser.GetStr("MySQL", "Host");
+	db = sXmlParser.GetStr("MySQL", "Database");
 
 	sDB.setInfos(user, password, host, db);
 	if (sDB.connect() == false)
@@ -66,9 +75,9 @@ bool CharServer::ConnectToDatabase()
 }
 bool CharServer::Start()
 {
-	if (sXmlParser->loadFile("CharServer") == false)
+	if (sXmlParser.loadFile("CharServer") == false)
 		return false;
-	sLog.SetLogLevel((LogLevel)sXmlParser->GetInt("LogLevel", "Value"));
+	sLog.SetLogLevel((LogLevel)sXmlParser.GetInt("LogLevel", "Value"));
 	if (loadDataTable() == false)
 	{
 		sLog.outError("Table data unsucessfully loaded, exiting...");
@@ -80,8 +89,8 @@ bool CharServer::Start()
 		sLog.outError("Database connection failed, exiting...");
 		return false;
 	}
-	network = new Listener<CharSocket>(sXmlParser->GetInt("Server", "Port"), worker);
-	sLog.outString("CharServer: Listener started on port: [%d]", sXmlParser->GetInt("Server", "Port"));
+	Listener<CharSocket>(sXmlParser.GetInt("Server", "Port"), worker);
+	sLog.outString("CharServer: Listener started on port: [%d]", sXmlParser.GetInt("Server", "Port"));
 
 	return true;
 }

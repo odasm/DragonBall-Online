@@ -1,7 +1,6 @@
 #include <mysqlconn_wrapper.h>
 
 using namespace std;
-MySQLConnWrapper MySQLConnWrapper::DB;
 MySQLConnWrapper::~MySQLConnWrapper()
 {
 	delete res;

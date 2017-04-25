@@ -12,6 +12,7 @@
 #include <mutex>
 #include <ResultCode.h>
 #include "../../../NtlBaseLib/TableAll.h"
+#include <Singleton.h>
 
 using namespace std;
 
@@ -19,7 +20,6 @@ struct sCU_CHARACTER_INFO;
 
 class MySQLConnWrapper
 {
-	static MySQLConnWrapper DB;
 public:
 	/* Your MySQL server settings */
 	MySQLConnWrapper()
@@ -51,11 +51,6 @@ public:
 	username , password , host , db
 	*/
 	void setInfos(string, string, string, string);
-
-	static MySQLConnWrapper& get() noexcept
-	{ // pour obtenir le singleton
-		return DB;
-	}
 	// REQUEST
 	ResultCodes ValidateLoginRequest(char *username, char* password, int accid);
 	int GetAccountID(char* username, char* password);
@@ -83,6 +78,7 @@ private:
 
 	std::mutex m_mutex;
 };
-#define sDB MySQLConnWrapper::get()
+
+#define sDB AKCore::Singleton<MySQLConnWrapper>::Instance()
 
 #endif /*__MYSQLCONN_WRAPPER__H*/

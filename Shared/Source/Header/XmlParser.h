@@ -4,13 +4,12 @@
 #include <libxml\parser.h>
 #include <iostream>
 #include <memory>
+#include <Singleton.h>
 
 #pragma comment(lib, "libxml2.lib")
 
 class XmlParser
 {
-	static XmlParser singleton;
-	XmlParser();
 public:
 	bool loadFile(char* filename);
 	char* GetStr(char* fieldname, char* valuename);
@@ -18,14 +17,11 @@ public:
 	void Free();
 	char* GetChildStr(char* child, char* fieldname, char* valuename);
 	int GetChildInt(char* child, char* fieldname, char* valuename);
-	static XmlParser *get() noexcept
-	{
-		return &singleton;
-	}
 private:
 	xmlDocPtr doc;
 	xmlNodePtr cur, node;
 	std::string filename;
 };
-#define sXmlParser XmlParser::get()
+#define sXmlParser AKCore::Singleton<XmlParser>::Instance()
+
 #endif XMLPARSER_H
