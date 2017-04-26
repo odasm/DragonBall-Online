@@ -13,7 +13,7 @@ bool CharSocket::GetLoginRequest(Packet &packet)
 {
 	sUC_LOGIN_REQ* req = (sUC_LOGIN_REQ*)packet.GetPacketData();
 	sCU_LOGIN_RES res;
-	memset(&res, 0, sizeof(sCU_LOGIN_RES));
+	::memset(&res, 0, sizeof(sCU_LOGIN_RES));
 
 	res.bEncrypt = 0;
 	res.wPacketSize = sizeof(sCU_LOGIN_RES) - 2;
@@ -35,7 +35,7 @@ bool CharSocket::GetLoginRequest(Packet &packet)
 bool CharSocket::GetCharacterServerList(Packet &packet, bool one)
 {
 	sCU_SERVER_FARM_INFO sinfo;
-	memset(&sinfo, 0, sizeof(sCU_SERVER_FARM_INFO));
+	::memset(&sinfo, 0, sizeof(sCU_SERVER_FARM_INFO));
 
 	sinfo.bEncrypt = 0;
 	sinfo.wPacketSize = sizeof(sCU_SERVER_FARM_INFO) - 2;
@@ -73,7 +73,7 @@ bool CharSocket::GetCharacterServerList(Packet &packet, bool one)
 	if (one)
 	{
 		sCU_CHARACTER_SERVERLIST_ONE_RES slone;
-		memset(&slone, 0, sizeof(sCU_CHARACTER_SERVERLIST_ONE_RES));
+		::memset(&slone, 0, sizeof(sCU_CHARACTER_SERVERLIST_ONE_RES));
 
 		slone.bEncrypt = 0;
 		slone.wPacketSize = sizeof(sCU_CHARACTER_SERVERLIST_ONE_RES) - 2;
@@ -85,7 +85,7 @@ bool CharSocket::GetCharacterServerList(Packet &packet, bool one)
 	else
 	{
 		sCU_CHARACTER_SERVERLIST_RES slres;
-		memset(&slres, 0, sizeof(slres));
+		::memset(&slres, 0, sizeof(slres));
 
 		slres.bEncrypt = 0;
 		slres.wPacketSize = sizeof(sCU_CHARACTER_SERVERLIST_RES) - 2;
@@ -99,7 +99,7 @@ bool CharSocket::GetCharacterServerList(Packet &packet, bool one)
 void CharSocket::SendCharacterList()
 {
 	sCU_CHARACTER_INFO cinfo;
-	memset(&cinfo, 0, sizeof(sCU_CHARACTER_INFO));
+	::memset(&cinfo, 0, sizeof(sCU_CHARACTER_INFO));
 
 	cinfo.bEncrypt = 0;
 	cinfo.wPacketSize = sizeof(sCU_CHARACTER_INFO) - 2;
@@ -128,7 +128,7 @@ void CharSocket::SendCharacterList()
 		cinfo.sPcData[i].bySkinColor = sDB.getInt("SkinColorID");
 		cinfo.sPcData[i].byLevel = sDB.getInt("CurrentLevel");
 		cinfo.sPcData[i].bTutorialFlag = sDB.getInt("TutorialFlag");
-		cinfo.sPcData[i].bNeedNameChange = sDB.getBoolean("NameChange");
+		cinfo.sPcData[i].bNeedNameChange = sDB.getBoolean("IsToRename");
 		cinfo.sPcData[i].dwMoney = sDB.getInt("ZennyInventory");
 		cinfo.sPcData[i].dwMoneyBank = sDB.getInt("ZennyBank");
 		cinfo.sPcData[i].worldId = sDB.getInt("WorldID");
@@ -187,7 +187,7 @@ bool CharSocket::GetCharacterLoad(Packet &packet)
 	sUC_CHARACTER_LOAD_REQ* req = (sUC_CHARACTER_LOAD_REQ*)packet.GetPacketData();
 	sDB.DBUpdateLastServer(req->accountId, req->serverFarmId);
 	sCU_SERVER_CHANNEL_INFO cninfo;
-	memset(&cninfo, 0, sizeof(sCU_SERVER_CHANNEL_INFO));
+	::memset(&cninfo, 0, sizeof(sCU_SERVER_CHANNEL_INFO));
 
 	cninfo.bEncrypt = 0;
 	cninfo.wPacketSize = sizeof(sCU_SERVER_CHANNEL_INFO) - 2;
@@ -198,22 +198,31 @@ bool CharSocket::GetCharacterLoad(Packet &packet)
 	char snode[20];
 	sprintf_s(snode, "Server%d", req->serverFarmId + 1);
 	cninfo.byCount = sXmlParser.GetInt(snode, "Count");
-	for (int i = 0; i < cninfo.byCount; ++i)
+
+	sDB.prepare("SELECT * from `realmlist` WHERE `ServerID` = ?");
+	sDB.setInt(1, req->serverFarmId + 1);
+	sDB.execute();
+	if (sDB.rowsCount() == cninfo.byCount)
 	{
-		cninfo.serverChannelInfo[i].bIsVisible = true;
-		cninfo.serverChannelInfo[i].byServerStatus = eDBO_SERVER_STATUS::DBO_SERVER_STATUS_UP;
-		cninfo.serverChannelInfo[i].byServerChannelIndex = i;
-		cninfo.serverChannelInfo[i].dwLoad = 0;
-		cninfo.serverChannelInfo[i].dwMaxLoad = 100;
-		cninfo.serverChannelInfo[i].serverFarmId = req->serverFarmId;
-		cninfo.serverChannelInfo[i].is_pvpdb = false;
+		int i = 0;
+		while (sDB.fetch())
+		{
+			cninfo.serverChannelInfo[i].bIsVisible = true;
+			cninfo.serverChannelInfo[i].byServerStatus = (eDBO_SERVER_STATUS)sDB.getInt("realmflags");
+			cninfo.serverChannelInfo[i].byServerChannelIndex = i;
+			cninfo.serverChannelInfo[i].dwLoad = sDB.getInt("population");
+			cninfo.serverChannelInfo[i].dwMaxLoad = 100;
+			cninfo.serverChannelInfo[i].serverFarmId = req->serverFarmId;
+			cninfo.serverChannelInfo[i].is_pvpdb = false;
+			i++;
+		}
 	}
 	Write((char*)&cninfo, sizeof(sCU_SERVER_CHANNEL_INFO));
 
 	SendCharacterList(); // SEND THE CURRENT CHARACTER LIST
 
 	sCU_CHARACTER_LOAD_RES clres;
-	memset(&clres, 0, sizeof(sCU_CHARACTER_LOAD_RES));
+	::memset(&clres, 0, sizeof(sCU_CHARACTER_LOAD_RES));
 
 	clres.bEncrypt = 0;
 	clres.wPacketSize = sizeof(sCU_CHARACTER_LOAD_RES) - 2;
@@ -230,7 +239,7 @@ bool CharSocket::GetCreateCharactersRequest(Packet &packet)
 {
 	sUC_CHARACTER_ADD_REQ* data = (sUC_CHARACTER_ADD_REQ*)packet.GetPacketData();
 	sCU_CHARACTER_ADD_RES res;
-	memset(&res, 0, sizeof(res));
+	::memset(&res, 0, sizeof(res));
 
 	wcstombs(username, data->awchCharName, MAX_SIZE_USERID_UNICODE + 1);
 	if (sDB.GetAmountOfCharacter(AccountID, ServerID) < 4) // ATM ONLY 4 CHARACTER CAN BE CREATE
@@ -305,14 +314,14 @@ bool CharSocket::GetCreateCharactersRequest(Packet &packet)
 		}
 	}
 	Write((char*)&res, sizeof(sCU_CHARACTER_ADD_RES));
-	SendCharacterList(); // FORCE REFRESHING ???
+	//SendCharacterList(); // FORCE REFRESHING ???
 	return true;
 }
 bool CharSocket::GetCharactersDeleteRequest(Packet &packet)
 {
 	sUC_CHARACTER_DEL_REQ *req = (sUC_CHARACTER_DEL_REQ*)packet.GetPacketData();
 	sCU_CHARACTER_DEL_RES res;
-	memset(&res, 0, sizeof(sCU_CHARACTER_DEL_RES));
+	::memset(&res, 0, sizeof(sCU_CHARACTER_DEL_RES));
 
 	res.bEncrypt = 0;
 	res.wOpCode = CU_CHARACTER_DEL_RES;
@@ -340,7 +349,7 @@ bool CharSocket::GetCharactersDeleteRequest(Packet &packet)
 bool CharSocket::SendCharacterExit(Packet &packet)
 {
 	sCU_CHARACTER_EXIT_RES res;
-	memset(&res, 0, sizeof(sCU_CHARACTER_EXIT_RES));
+	::memset(&res, 0, sizeof(sCU_CHARACTER_EXIT_RES));
 
 	res.bEncrypt = 0;
 	res.wOpCode = CU_CHARACTER_EXIT_RES;
@@ -355,7 +364,7 @@ bool CharSocket::SendCancelCharacterDeleteRequest(Packet &packet)
 {
 	sUC_CHARACTER_DEL_CANCEL_REQ *req = (sUC_CHARACTER_DEL_CANCEL_REQ*)packet.GetPacketData();
 	sCU_CHARACTER_DEL_CANCEL_RES res;
-	memset(&res, 0, sizeof(sCU_CHARACTER_DEL_CANCEL_RES));
+	::memset(&res, 0, sizeof(sCU_CHARACTER_DEL_CANCEL_RES));
 
 	res.bEncrypt = 0;
 	res.wOpCode = CU_CHARACTER_DEL_CANCEL_RES;
@@ -408,6 +417,25 @@ bool CharSocket::SendConnectWaitCheck(Packet& packet)
 
 	Write((char*)&res2, sizeof(sCU_CONNECT_WAIT_COUNT_NFY));
 
+	return true;
+}
+bool CharSocket::SendCharacterRename(Packet &packet)
+{
+	sUC_CHARACTER_RENAME_REQ * req = (sUC_CHARACTER_RENAME_REQ*)packet.GetPacketData();
+	sCU_CHARACTER_RENAME_RES res;
+	char	nameRequest[MAX_SIZE_USERID_UNICODE + 1];
+	
+	wcstombs(nameRequest, req->awchCharName, MAX_SIZE_USERID_UNICODE + 1);
+	res.bEncrypt = 0;
+	res.wPacketSize = sizeof(sCU_CHARACTER_RENAME_RES) - 2;
+	res.wOpCode = CU_CHARACTER_RENAME_RES;
+	res.charId = req->charId;
+	res.wResultCode = sDB.CharacterRename(req->charId, nameRequest);
+	if (res.wResultCode == CHARACTER_SUCCESS)
+	{
+		memcpy(username, nameRequest, MAX_SIZE_USERID_UNICODE + 1);
+	}
+	Write((char*)&res, sizeof(sCU_CHARACTER_RENAME_RES));
 	return true;
 }
 bool CharSocket::_ProcessCharPacket(Packet& packet, WORD wOpCode)
@@ -472,7 +500,7 @@ bool CharSocket::_ProcessCharPacket(Packet& packet, WORD wOpCode)
 		case UC_CHARACTER_RENAME_REQ:
 		{
 			sLog.outDebug("~~~~~~~~~ UC_CHARACTER_RENAME_REQ ~~~~~~~~~");
-			break;
+			return SendCharacterRename(packet);
 		}
 		case UC_CASHITEM_HLSHOP_REFRESH_REQ:
 		{

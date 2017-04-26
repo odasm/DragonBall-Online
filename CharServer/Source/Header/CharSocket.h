@@ -7,6 +7,7 @@
 #include <functional>
 #include <Packet.h>
 #include <TableAll.h>
+#include <Singleton.h>
 
 class CharSocket : public Socket
 {
@@ -25,6 +26,7 @@ public:
 	bool SendCancelCharacterDeleteRequest(Packet &packet);
 	bool SendCharSelect(Packet &packet);
 	bool SendConnectWaitCheck(Packet& packet);
+	bool SendCharacterRename(Packet& packet);
 private:
 	virtual bool ProcessIncomingData() override;
 	virtual void OnConnectionDone() override;

@@ -89,7 +89,7 @@ bool CharServer::Start()
 		sLog.outError("Database connection failed, exiting...");
 		return false;
 	}
-	Listener<CharSocket>(sXmlParser.GetInt("Server", "Port"), worker);
+	network = new Listener<CharSocket>(sXmlParser.GetInt("Server", "Port"), worker);
 	sLog.outString("CharServer: Listener started on port: [%d]", sXmlParser.GetInt("Server", "Port"));
 
 	return true;

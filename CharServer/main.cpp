@@ -32,12 +32,10 @@ int main()
 	{
 		return -1;
 	}
-	
 	while (!stopEvent)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
-
 	sLog.outString("Halting process...");
 	return 0;
 }

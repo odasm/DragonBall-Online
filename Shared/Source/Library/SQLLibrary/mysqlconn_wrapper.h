@@ -64,6 +64,8 @@ public:
 	void VerifyCharacterToDelete(int accid);
 	ResultCodes CancelDeleteCharacterPending(CHARACTERID charid);
 	int GetAmountOfCharacter(int accid, int servid);
+	ResultCodes CharacterRename(int charid, char* newName);
+	void SetGameServerState(int serverID, int chanID, int online);
 private:
 	string host;
 	string user;

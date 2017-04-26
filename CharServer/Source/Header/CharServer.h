@@ -1,3 +1,6 @@
+#ifndef _CHARSERVER_H
+#define _CHARSERVER_H
+
 #pragma once
 
 #include <Listener.h>
@@ -13,6 +16,10 @@ public:
 	bool ConnectToDatabase();
 private:
 	bool loadDataTable();
+
+	Listener<CharSocket>	*network;
 	int port;
 	int worker;
 };
+
+#endif

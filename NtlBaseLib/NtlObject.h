@@ -200,7 +200,6 @@ struct sDYNAMIC_OBJECT_STATE
 struct sOBJECT_INFO
 {
 	BYTE					objType;
-
 	union
 	{
 		struct // pc

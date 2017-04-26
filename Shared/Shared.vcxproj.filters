@@ -19,6 +19,27 @@
     <Filter Include="Source Files\XmlParser">
       <UniqueIdentifier>{f478f613-f003-47fb-b6b7-852f36ab4c65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Network">
+      <UniqueIdentifier>{1a5e47a7-f7ee-4301-9cc9-b1c53ee3e148}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{451e5f53-9b0a-40d6-b5e6-134b8438940b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Network\Packet">
+      <UniqueIdentifier>{d4232ce9-1d28-4d71-9c83-7b871bf013e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Network\Packet\Auth">
+      <UniqueIdentifier>{ff13459b-20fa-4007-b628-6bb93913ef12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Network\Packet\Char">
+      <UniqueIdentifier>{5c45e072-9bf3-4a3f-8aac-4fd037dfc6b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Network\Packet">
+      <UniqueIdentifier>{32696616-ecfc-40a6-a972-2060dc8abdc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Network\Packet\Game">
+      <UniqueIdentifier>{92de6126-4652-4108-b1da-e395ab3bbcb9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Header\Logger.h">
@@ -66,6 +87,36 @@
     <ClInclude Include="Source\Header\Singleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Library\NetworkLibrary\Header\Listener.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\NetworkLibrary\Header\NetworkThread.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\NetworkLibrary\Header\Packet.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\NetworkLibrary\Header\PacketBuffer.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\NetworkLibrary\Header\Socket.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\NetworkLibrary\Header\Packet\Auth\PacketAU.h">
+      <Filter>Header Files\Network\Packet\Auth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\NetworkLibrary\Header\Packet\Char\PacketCU.h">
+      <Filter>Header Files\Network\Packet\Char</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\NetworkLibrary\Header\Packet\Char\PacketUC.h">
+      <Filter>Header Files\Network\Packet\Char</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\NetworkLibrary\Header\Packet\Game\PacketUG.h">
+      <Filter>Header Files\Network\Packet\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Library\NetworkLibrary\Header\Packet\Game\PacketGU.h">
+      <Filter>Header Files\Network\Packet\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CPP\Logger.cpp">
@@ -88,6 +139,18 @@
     </ClCompile>
     <ClCompile Include="Source\CPP\Threading.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\NetworkLibrary\CPP\Listener.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\NetworkLibrary\CPP\Packet.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\NetworkLibrary\CPP\PacketBuffer.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Library\NetworkLibrary\CPP\Socket.cpp">
+      <Filter>Source Files\Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

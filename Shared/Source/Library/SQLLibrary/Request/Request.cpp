@@ -239,3 +239,23 @@ int MySQLConnWrapper::GetAmountOfCharacter(int accid, int servid)
 	execute();
 	return rowsCount();
 }
+ResultCodes MySQLConnWrapper::CharacterRename(int charid, char* newName)
+{
+	if (checkUsedName(newName) != CHARACTER_SUCCESS)
+		return CHARACTER_SAMENAME_EXIST;
+	prepare("UPDATE `characters` SET `Name` = ?, `IsToRename` = ? WHERE `CharacterID` = ?;");
+	setString(1, newName);
+	setInt(2, 0);
+	setInt(3, charid);
+	execute();
+	return CHARACTER_SUCCESS;
+}
+void MySQLConnWrapper::SetGameServerState(int serverID, int chanID, int online)
+{
+	prepare("UPDATE `realmlist` SET `realmflags` = ?, `population` = ? WHERE `ServerID` = ? AND `ChannelID` = ?;");
+	setInt(1, online);
+	setInt(2, 0);
+	setInt(3, serverID);
+	setInt(4, chanID);
+	execute();
+}

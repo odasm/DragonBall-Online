@@ -4,4 +4,18 @@
   <!-- 0 MINIMAL  1 BASIC  2 DETAIL  3 DEBUG -->
   <LogLevel Value="3"/>
 
+  <!-- Server Configuration -->
+  <Server ID="1" ChannelID="1" IP="88.190.215.114" Port="50400" />
+  <MySQL Host="tcp://127.0.0.1:3306" Database="dragonball" User="root" Password="" />
+  
+  <!-- Game Data Tables Folder Location -->
+  <GameData Path="../TWTables/" />
+  
+  <!-- Multipliers -->
+  <Multipliers MobExp="20" />
+  
+  <!-- Char Server List Configuration -->
+  <CharServerList Count="1">
+    <CharServer1 IP="88.190.215.114" Port="50300" />
+  </CharServerList>
 </GameServer>

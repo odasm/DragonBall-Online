@@ -34,6 +34,12 @@ bool CharSocket::ProcessIncomingData()
 		Packet *pk = new Packet();
 		pk->AttachData((BYTE*)InPeak(), sizeInc);
 		PACKETDATA *header = (PACKETDATA*)InPeak();
+		if ((pk->GetHeaderSize() < 4) || (pk->GetHeaderSize() > PACKET_MAX_SIZE))
+		{
+			sLog.outError("AuthSocket::ProcessIncomingData: client sent malformed packet size = %u", pk->GetHeaderSize());
+			errno = EINVAL;
+			return false;
+		}
 		sLog.outDebug("Received opcode: [%u] from: [%s]", header->wOpCode, m_address);
 		/*
 		///		 DECRYPT PACKET HERE ????		\\\

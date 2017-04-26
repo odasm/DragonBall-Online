@@ -1,3 +1,6 @@
+#ifndef _AUTHSERVER_H
+# define _AUTHSERVER_H
+
 #pragma once
 
 #include <Listener.h>
@@ -12,6 +15,9 @@ public:
 	bool ConnectToDatabase();
 	bool Start();
 private:
+	Listener<AuthSocket>	*network;
 	int port;
 	int worker;
 };
+
+#endif
